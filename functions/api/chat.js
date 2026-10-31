@@ -1,11 +1,25 @@
 /**
  * Cloudflare Pages Function for POST /api/chat
- * Ensures the AI Assistant also works seamlessly when deployed to Cloudflare Pages.
- * Uses environment variable GEMINI_API_KEY configured in Cloudflare Pages secrets.
+ * Hardened in Phase 09:
+ * - Passes GEMINI_API_KEY via x-goog-api-key header (never in URL query string)
+ * - Enforces Content-Type: application/json and anti-CSRF header validation
+ * - Enforces per-IP sliding window rate limiting
+ * - Strips control characters, HTML angle brackets, and redacts sensitive number sequences
+ * - Sets Cache-Control: no-store and prevents internal error leakage
  */
 
 const MAX_MESSAGE_CHARS = 600;
 const MAX_CONTEXT_MESSAGES = 8;
+const RATE_LIMIT_WINDOW_MS = 60_000;
+const RATE_LIMIT_MAX_REQUESTS = 12;
+
+const edgeRateLimitStore = new Map();
+
+const JSON_SECURITY_HEADERS = {
+  'Content-Type': 'application/json; charset=utf-8',
+  'Cache-Control': 'no-store, no-cache, must-revalidate, private',
+  'X-Content-Type-Options': 'nosniff',
+};
 
 const SYSTEM_INSTRUCTION = `You are the official AI Assistant on mdselim.com, the personal branding and web development website of MD Selim.
 Always be transparent that you are MD Selim's AI Assistant, not Selim in person.
@@ -17,18 +31,98 @@ Direct visitors to /contact/ or hello@mdselim.com for project inquiries.`;
 
 function sanitize(raw, maxLen) {
   if (typeof raw !== 'string') return '';
-  return raw.trim().slice(0, maxLen);
+  return raw
+    .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, '')
+    .replace(/[<>]/g, '')
+    .replace(/\b(?:\d[ -]*?){13,19}\b/g, '[REDACTED-NUMBER]')
+    .replace(/\b\d{3}-\d{2}-\d{4}\b/g, '[REDACTED-ID]')
+    .trim()
+    .slice(0, maxLen);
+}
+
+function checkEdgeRateLimit(ip) {
+  const now = Date.now();
+  const windowStart = now - RATE_LIMIT_WINDOW_MS;
+  const timestamps = (edgeRateLimitStore.get(ip) || []).filter((ts) => ts > windowStart);
+
+  if (timestamps.length >= RATE_LIMIT_MAX_REQUESTS) {
+    const oldest = timestamps[0] || now;
+    const retryAfterSeconds = Math.max(
+      1,
+      Math.ceil((oldest + RATE_LIMIT_WINDOW_MS - now) / 1000)
+    );
+    edgeRateLimitStore.set(ip, timestamps);
+    return { allowed: false, retryAfterSeconds };
+  }
+
+  timestamps.push(now);
+  edgeRateLimitStore.set(ip, timestamps);
+  return { allowed: true, retryAfterSeconds: 0 };
 }
 
 export async function onRequestPost(context) {
   try {
-    const body = await context.request.json();
+    const req = context.request;
+    const contentType = (req.headers.get('content-type') || '').toLowerCase();
+    if (!contentType.includes('application/json')) {
+      return new Response(
+        JSON.stringify({ error: 'Unsupported content type. JSON is required.' }),
+        { status: 415, headers: JSON_SECURITY_HEADERS }
+      );
+    }
+
+    // Origin check when Origin header is present (CSRF defense)
+    const origin = req.headers.get('origin');
+    if (origin) {
+      try {
+        const originUrl = new URL(origin);
+        const reqUrl = new URL(req.url);
+        if (originUrl.host !== reqUrl.host && !originUrl.hostname.endsWith('mdselim.com')) {
+          return new Response(
+            JSON.stringify({ error: 'Cross-origin request rejected.' }),
+            { status: 403, headers: JSON_SECURITY_HEADERS }
+          );
+        }
+      } catch {
+        return new Response(
+          JSON.stringify({ error: 'Invalid request origin.' }),
+          { status: 403, headers: JSON_SECURITY_HEADERS }
+        );
+      }
+    }
+
+    const clientIp =
+      req.headers.get('cf-connecting-ip') ||
+      (req.headers.get('x-forwarded-for') || '').split(',')[0].trim() ||
+      'edge-client';
+
+    const rate = checkEdgeRateLimit(clientIp);
+    if (!rate.allowed) {
+      return new Response(
+        JSON.stringify({
+          error: `Rate limit reached. Please wait ${rate.retryAfterSeconds}s before sending another message.`,
+          retryAfterSeconds: rate.retryAfterSeconds,
+        }),
+        { status: 429, headers: JSON_SECURITY_HEADERS }
+      );
+    }
+
+    const body = await req.json();
+
+    // Honeypot check
+    if (typeof body?.honeypot === 'string' && body.honeypot.trim().length > 0) {
+      return new Response(
+        JSON.stringify({ error: 'Request rejected.' }),
+        { status: 400, headers: JSON_SECURITY_HEADERS }
+      );
+    }
+
     const message = sanitize(body?.message, MAX_MESSAGE_CHARS);
 
     if (!message) {
       return new Response(
         JSON.stringify({ error: 'Please enter a non-empty question or message.' }),
-        { status: 400, headers: { 'Content-Type': 'application/json' } }
+        { status: 400, headers: JSON_SECURITY_HEADERS }
       );
     }
 
@@ -44,27 +138,29 @@ export async function onRequestPost(context) {
           ],
           source: 'knowledge-fallback',
         }),
-        { status: 200, headers: { 'Content-Type': 'application/json' } }
+        { status: 200, headers: JSON_SECURITY_HEADERS }
       );
     }
 
     const rawHistory = Array.isArray(body?.history) ? body.history : [];
     const contents = [
-      ...rawHistory.slice(-MAX_CONTEXT_MESSAGES).map((turn) => ({
-        role: turn?.role === 'model' ? 'model' : 'user',
-        parts: [{ text: sanitize(turn?.text, MAX_MESSAGE_CHARS) }],
-      })),
+      ...rawHistory
+        .slice(-MAX_CONTEXT_MESSAGES)
+        .map((turn) => ({
+          role: turn?.role === 'model' ? 'model' : 'user',
+          parts: [{ text: sanitize(turn?.text, MAX_MESSAGE_CHARS) }],
+        }))
+        .filter((turn) => turn.parts[0].text.length > 0),
       { role: 'user', parts: [{ text: message }] },
     ];
 
     const apiRes = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${encodeURIComponent(
-        apiKey
-      )}`,
+      'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent',
       {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'x-goog-api-key': apiKey,
           'User-Agent': 'aistudio-build',
         },
         body: JSON.stringify({
@@ -85,7 +181,7 @@ export async function onRequestPost(context) {
           ],
           source: 'knowledge-fallback',
         }),
-        { status: 200, headers: { 'Content-Type': 'application/json' } }
+        { status: 200, headers: JSON_SECURITY_HEADERS }
       );
     }
 
@@ -96,21 +192,22 @@ export async function onRequestPost(context) {
 
     return new Response(
       JSON.stringify({
-        reply,
+        reply: sanitize(reply, 2000),
         suggestedRoutes: [
           { label: 'Explore Services', path: '/services/' },
           { label: 'Contact Page', path: '/contact/' },
         ],
         source: 'ai',
       }),
-      { status: 200, headers: { 'Content-Type': 'application/json' } }
+      { status: 200, headers: JSON_SECURITY_HEADERS }
     );
   } catch (_err) {
     return new Response(
       JSON.stringify({
         error: 'Unable to process chat request right now. Please use the Contact page.',
       }),
-      { status: 500, headers: { 'Content-Type': 'application/json' } }
+      { status: 500, headers: JSON_SECURITY_HEADERS }
     );
   }
 }
+

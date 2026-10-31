@@ -6,6 +6,9 @@ import {defineConfig} from 'vite';
 export default defineConfig(() => {
   return {
     plugins: [react(), tailwindcss()],
+    // Security: Strictly restrict client-exposed env vars to VITE_ prefix only.
+    // Server secrets like GEMINI_API_KEY are never bundled into frontend assets.
+    envPrefix: ['VITE_'],
     resolve: {
       alias: {
         '@': path.resolve(__dirname, '.'),

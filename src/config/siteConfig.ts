@@ -94,9 +94,10 @@ export interface SiteConfig {
 const envGoogleVerification =
   typeof import.meta !== 'undefined' &&
   import.meta.env &&
-  typeof import.meta.env.VITE_GOOGLE_SITE_VERIFICATION === 'string'
+  typeof import.meta.env.VITE_GOOGLE_SITE_VERIFICATION === 'string' &&
+  import.meta.env.VITE_GOOGLE_SITE_VERIFICATION.trim().length > 0
     ? import.meta.env.VITE_GOOGLE_SITE_VERIFICATION.trim()
-    : '';
+    : 'OmCZTyfne7XN_LTu8t-GoXj4lxtHNCGRuG5nDn8tEnU';
 
 export const siteConfig: SiteConfig = {
   brand: {

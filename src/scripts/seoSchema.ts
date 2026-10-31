@@ -2,6 +2,7 @@ import { RoutePath, siteConfig } from '../config/siteConfig';
 import { InsightArticle } from '../content/insightsContent';
 import { servicesData } from '../data/servicesData';
 import { ProjectItem } from '../data/workData';
+import { safeJsonLdStringify } from './securityUtils';
 
 export interface BreadcrumbEntry {
   name: string;
@@ -373,7 +374,7 @@ export function applyPageSeo(
     });
   }
 
-  // 6. Schema.org JSON-LD Structured Data
+  // 6. Schema.org JSON-LD Structured Data (escaped against script breakout)
   const structuredData = buildRouteStructuredData(route, {
     ...override,
     canonicalUrl,
@@ -387,5 +388,5 @@ export function applyPageSeo(
     scriptEl.type = 'application/ld+json';
     document.head.appendChild(scriptEl);
   }
-  scriptEl.textContent = JSON.stringify(structuredData, null, 2);
+  scriptEl.textContent = safeJsonLdStringify(structuredData);
 }

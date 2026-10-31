@@ -15,6 +15,11 @@ import {
   ChatSuggestedRoute,
 } from '../../data/chatbotKnowledge';
 import { navigateTo } from '../../scripts/router';
+import {
+  isValidEmailAddress,
+  redactSensitivePatterns,
+  sanitizePlainText,
+} from '../../scripts/securityUtils';
 
 interface ChatMessage {
   id: string;
@@ -42,10 +47,10 @@ const INITIAL_MESSAGE: ChatMessage = {
 };
 
 /**
- * Phase 06: Independent AI Assistant Widget for mdselim.com
+ * Phase 06 & Phase 09: Hardened Independent AI Assistant Widget for mdselim.com
  * - Clearly discloses AI identity (visitors are talking to an AI assistant, not Selim directly)
- * - Enforces input validation, context limits, session usage caps, privacy disclosure,
- *   consent-based preliminary project intake, and safe fallback handling.
+ * - Enforces input sanitization, sensitive number redaction, context limits, session usage caps,
+ *   anti-CSRF headers, privacy disclosure, consent-based preliminary project intake, and safe fallback handling.
  */
 export const AssistantWidget: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -64,6 +69,7 @@ export const AssistantWidget: React.FC = () => {
   );
   const [briefNotes, setBriefNotes] = useState('');
   const [briefConsent, setBriefConsent] = useState(false);
+  const [briefHoneypot, setBriefHoneypot] = useState('');
   const [briefError, setBriefError] = useState<string | null>(null);
   const [briefSubmitted, setBriefSubmitted] = useState(false);
 
@@ -79,15 +85,15 @@ export const AssistantWidget: React.FC = () => {
   }, [messages, isOpen, showBriefForm]);
 
   const sendMessage = async (rawText: string) => {
-    const trimmed = rawText.trim();
+    const sanitized = sanitizePlainText(rawText, CHATBOT_LIMITS.MAX_MESSAGE_CHARS + 50);
     setErrorBanner(null);
 
-    if (!trimmed) {
+    if (!sanitized) {
       setErrorBanner('Please enter a message before sending.');
       return;
     }
 
-    if (trimmed.length > CHATBOT_LIMITS.MAX_MESSAGE_CHARS) {
+    if (sanitized.length > CHATBOT_LIMITS.MAX_MESSAGE_CHARS) {
       setErrorBanner(
         `Please keep your message under ${CHATBOT_LIMITS.MAX_MESSAGE_CHARS} characters.`
       );
@@ -101,10 +107,16 @@ export const AssistantWidget: React.FC = () => {
       return;
     }
 
+    // Privacy protection: Redact accidental credit card or SSN sequences before sending
+    const { redactedText, hadSensitivePattern } = redactSensitivePatterns(sanitized);
+
     const userMessage: ChatMessage = {
       id: `user-${Date.now()}`,
       role: 'user',
-      text: trimmed,
+      text: redactedText,
+      notice: hadSensitivePattern
+        ? 'Privacy protection: Sensitive number sequences were automatically redacted.'
+        : undefined,
     };
 
     const historyForApi = messages
@@ -124,10 +136,12 @@ export const AssistantWidget: React.FC = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest',
         },
         body: JSON.stringify({
-          message: trimmed,
+          message: redactedText,
           history: historyForApi,
+          honeypot: '',
         }),
       });
 
@@ -153,7 +167,7 @@ export const AssistantWidget: React.FC = () => {
         role: 'model',
         text:
           data?.reply ||
-          buildSafeFallbackReply(trimmed).reply,
+          buildSafeFallbackReply(redactedText).reply,
         suggestedRoutes: data?.suggestedRoutes,
         notice: data?.notice,
       };
@@ -161,7 +175,7 @@ export const AssistantWidget: React.FC = () => {
       setMessages((prev) => [...prev, assistantMessage]);
     } catch (_err) {
       // Safe client-side fallback if network or endpoint is unreachable
-      const fallback = buildSafeFallbackReply(trimmed);
+      const fallback = buildSafeFallbackReply(redactedText);
       setMessages((prev) => [
         ...prev,
         {
@@ -188,6 +202,11 @@ export const AssistantWidget: React.FC = () => {
     e.preventDefault();
     setBriefError(null);
 
+    if (briefHoneypot.trim().length > 0) {
+      setBriefSubmitted(true);
+      return;
+    }
+
     if (!briefConsent) {
       setBriefError(
         'Please check the consent box to confirm you want to share these preliminary project details.'
@@ -195,8 +214,12 @@ export const AssistantWidget: React.FC = () => {
       return;
     }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!briefName.trim() || !emailRegex.test(briefEmail.trim())) {
+    const cleanName = sanitizePlainText(briefName, 100);
+    const cleanEmail = sanitizePlainText(briefEmail, 120);
+    const cleanService = sanitizePlainText(briefService, 160);
+    const cleanNotes = sanitizePlainText(briefNotes, 500);
+
+    if (!cleanName || !isValidEmailAddress(cleanEmail)) {
       setBriefError('Please enter your name and a valid email address.');
       return;
     }
@@ -204,13 +227,17 @@ export const AssistantWidget: React.FC = () => {
     try {
       const res = await fetch('/api/chat/preliminary-brief', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest',
+        },
         body: JSON.stringify({
-          name: briefName.trim(),
-          email: briefEmail.trim(),
-          serviceNeed: briefService,
-          notes: briefNotes.trim(),
+          name: cleanName,
+          email: cleanEmail,
+          serviceNeed: cleanService,
+          notes: cleanNotes,
           consent: briefConsent,
+          websiteConfirm: briefHoneypot,
         }),
       });
 
@@ -229,7 +256,7 @@ export const AssistantWidget: React.FC = () => {
       {
         id: `model-brief-${Date.now()}`,
         role: 'model',
-        text: `Thank you, ${briefName.trim()}. I have recorded your preliminary project brief (${briefService}) with your consent. For a full project review, you can also submit your full details on the Contact page or email hello@mdselim.com directly.`,
+        text: `Thank you, ${cleanName}. I have recorded your preliminary project brief (${cleanService}) with your consent. For a full project review, you can also submit your full details on the Contact page or email hello@mdselim.com directly.`,
         suggestedRoutes: [{ label: 'Open Contact Page', path: '/contact/' }],
       },
     ]);
