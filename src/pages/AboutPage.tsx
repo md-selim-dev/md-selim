@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Check } from 'lucide-react';
 import { Button } from '../components/Button';
 import { SectionContainer } from '../components/SectionContainer';
 import { VisualWireframeCanvas } from '../components/VisualWireframeCanvas';
@@ -15,20 +15,21 @@ export const AboutPage: React.FC = () => {
         kicker={aboutContent.kicker}
         title={aboutContent.headline}
         description={aboutContent.lead}
-        metaLine={`${siteConfig.brand.founderName} · ${siteConfig.brand.role} · ${siteConfig.brand.domain}`}
+        metaLine={`${siteConfig.brand.founderName} · ${siteConfig.brand.domain} · ${siteConfig.brand.location}`}
       />
 
-      {/* Narrative & Studio Blueprint */}
-      <SectionContainer surface="white" spacing="default" borderBottom>
+      {/* 1. PROFESSIONAL BACKGROUND & WORKING APPROACH */}
+      <SectionContainer surface="canvas" spacing="default" borderBottom>
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-start">
           <div className="lg:col-span-7 space-y-5">
+            <p className={themeTokens.typography.kicker}>01 · Professional Background</p>
             <h2 className={themeTokens.typography.sectionHeadline}>
-              Why clarity and technical structure matter for service businesses.
+              Practical web development focused on service clarity and long-term usefulness.
             </h2>
-            {aboutContent.narrative.map((paragraph, index) => (
+            {aboutContent.background.map((paragraph, index) => (
               <p
                 key={index}
-                className="text-sm sm:text-base text-slate-600 leading-relaxed"
+                className="text-sm sm:text-base text-[var(--text-secondary)] leading-relaxed"
               >
                 {paragraph}
               </p>
@@ -40,7 +41,7 @@ export const AboutPage: React.FC = () => {
                 <ArrowRight className="w-4 h-4" />
               </Button>
               <Button to="/contact/" variant="secondary" size="md">
-                Get in Touch
+                Contact MD Selim
               </Button>
             </div>
           </div>
@@ -51,29 +52,71 @@ export const AboutPage: React.FC = () => {
         </div>
       </SectionContainer>
 
-      {/* Operating Principles */}
+      {/* 2. CORE CAPABILITIES */}
       <SectionContainer surface="canvas" spacing="default" borderBottom>
         <div className="space-y-10">
           <div className="max-w-2xl space-y-3">
-            <p className={themeTokens.typography.kicker}>Working Principles</p>
+            <p className={themeTokens.typography.kicker}>02 · Capabilities</p>
             <h2 className={themeTokens.typography.sectionHeadline}>
-              Four standards that govern every website I build.
+              What I bring to small service business projects.
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {aboutContent.capabilities.map((cap) => (
+              <div
+                key={cap.index}
+                className="ds-card p-6 sm:p-7 flex flex-col justify-between space-y-6"
+              >
+                <div className="space-y-3">
+                  <p className="font-mono text-xs font-semibold text-[var(--accent-primary)]">
+                    Capability {cap.index}
+                  </p>
+                  <h3 className="text-lg font-bold text-[var(--text-primary)]">
+                    {cap.title}
+                  </h3>
+                  <p className="text-sm text-[var(--text-secondary)] leading-relaxed">
+                    {cap.summary}
+                  </p>
+                </div>
+
+                <ul className="pt-4 border-t border-[var(--border-subtle)] space-y-2">
+                  {cap.items.map((item) => (
+                    <li
+                      key={item}
+                      className="flex items-start gap-2 text-xs text-[var(--text-primary)]"
+                    >
+                      <Check className="w-3.5 h-3.5 text-[var(--accent-primary)] shrink-0 mt-0.5" />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </div>
+      </SectionContainer>
+
+      {/* 3. WORKING PHILOSOPHY */}
+      <SectionContainer surface="canvas" spacing="default" borderBottom>
+        <div className="space-y-10">
+          <div className="max-w-2xl space-y-3">
+            <p className={themeTokens.typography.kicker}>03 · Working Philosophy</p>
+            <h2 className={themeTokens.typography.sectionHeadline}>
+              Four principles that guide every build.
             </h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {aboutContent.principles.map((item) => (
-              <div
-                key={item.index}
-                className="rounded-xl bg-white border border-stone-200/90 p-6 sm:p-8 space-y-3"
-              >
-                <p className="text-xs font-mono font-semibold text-blue-700">
+              <div key={item.index} className="ds-card p-6 sm:p-8 space-y-3">
+                <p className="text-xs font-mono font-semibold text-[var(--accent-primary)]">
                   Principle {item.index}
                 </p>
-                <h3 className="text-lg sm:text-xl font-bold text-slate-900">
+                <h3 className="text-lg sm:text-xl font-bold text-[var(--text-primary)]">
                   {item.title}
                 </h3>
-                <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
+                <p className="text-sm sm:text-base text-[var(--text-secondary)] leading-relaxed">
                   {item.description}
                 </p>
               </div>
@@ -82,33 +125,52 @@ export const AboutPage: React.FC = () => {
         </div>
       </SectionContainer>
 
-      {/* Technical Stack & Standards */}
-      <SectionContainer surface="white" spacing="default">
-        <div className="space-y-8">
+      {/* 4. TECHNICAL STANDARDS & CTA */}
+      <SectionContainer surface="canvas" spacing="default">
+        <div className="space-y-10">
           <div className="max-w-2xl space-y-3">
-            <p className={themeTokens.typography.kicker}>Architecture & Tooling</p>
+            <p className={themeTokens.typography.kicker}>04 · Technical Standards</p>
             <h2 className={themeTokens.typography.sectionHeadline}>
-              Clean engineering without fragile dependencies.
+              Clean implementation without unnecessary complexity.
             </h2>
           </div>
 
-          <div className="divide-y divide-stone-200 border-t border-b border-stone-200">
+          <div className="divide-y divide-[var(--border-subtle)] border-t border-b border-[var(--border-subtle)]">
             {aboutContent.technicalStandards.map((spec) => (
               <div
                 key={spec.category}
                 className="py-5 grid grid-cols-1 md:grid-cols-12 gap-4 items-baseline"
               >
                 <div className="md:col-span-3">
-                  <h3 className="text-sm font-bold text-slate-900">{spec.category}</h3>
+                  <h3 className="text-sm font-bold text-[var(--text-primary)]">
+                    {spec.category}
+                  </h3>
                 </div>
                 <div className="md:col-span-5">
-                  <p className="text-xs sm:text-sm font-mono text-slate-800">{spec.tools}</p>
+                  <p className="text-xs sm:text-sm font-mono text-[var(--accent-primary)]">
+                    {spec.tools}
+                  </p>
                 </div>
                 <div className="md:col-span-4">
-                  <p className="text-sm text-slate-600">{spec.purpose}</p>
+                  <p className="text-sm text-[var(--text-secondary)]">{spec.purpose}</p>
                 </div>
               </div>
             ))}
+          </div>
+
+          <div className="ds-card p-7 sm:p-9 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+            <div className="space-y-1.5 max-w-xl">
+              <h3 className="text-lg font-bold text-[var(--text-primary)]">
+                Interested in working together on your website?
+              </h3>
+              <p className="text-sm text-[var(--text-secondary)]">
+                Send a short note about your business and what you want to build or improve.
+              </p>
+            </div>
+            <Button to="/contact/" variant="primary" size="md">
+              Get in Touch
+              <ArrowRight className="w-4 h-4" />
+            </Button>
           </div>
         </div>
       </SectionContainer>

@@ -4,7 +4,7 @@ import { themeTokens } from '../styles/themeTokens';
 export interface SectionContainerProps {
   id?: string;
   children: React.ReactNode;
-  surface?: 'canvas' | 'white' | 'muted' | 'dark';
+  surface?: 'canvas' | 'elevated' | 'interactive';
   spacing?: 'default' | 'compact' | 'none';
   borderTop?: boolean;
   borderBottom?: boolean;
@@ -25,10 +25,9 @@ export const SectionContainer: React.FC<SectionContainerProps> = ({
   as: Tag = 'section',
 }) => {
   const surfaceMap = {
-    canvas: 'bg-[#FAF9F6] text-slate-900',
-    white: 'bg-white text-slate-900',
-    muted: 'bg-[#F3F2EE] text-slate-900',
-    dark: 'bg-slate-900 text-stone-100',
+    canvas: 'bg-transparent text-[var(--text-primary)]',
+    elevated: 'bg-[var(--bg-elevated-translucent)] text-[var(--text-primary)]',
+    interactive: 'bg-[var(--bg-interactive)] text-[var(--text-primary)]',
   };
 
   const spacingMap = {
@@ -38,8 +37,8 @@ export const SectionContainer: React.FC<SectionContainerProps> = ({
   };
 
   const borderClasses = [
-    borderTop ? 'border-t border-stone-200/90' : '',
-    borderBottom ? 'border-b border-stone-200/90' : '',
+    borderTop ? 'border-t border-[var(--border-subtle)]' : '',
+    borderBottom ? 'border-b border-[var(--border-subtle)]' : '',
   ]
     .filter(Boolean)
     .join(' ');
@@ -47,7 +46,8 @@ export const SectionContainer: React.FC<SectionContainerProps> = ({
   return (
     <Tag
       id={id}
-      className={`${surfaceMap[surface]} ${spacingMap[spacing]} ${borderClasses} ${className}`.trim()}
+      data-reveal="section"
+      className={`relative ${surfaceMap[surface]} ${spacingMap[spacing]} ${borderClasses} ${className}`.trim()}
     >
       <div className={`${themeTokens.layout.container} ${containerClassName}`.trim()}>
         {children}

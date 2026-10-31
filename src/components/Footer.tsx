@@ -12,9 +12,9 @@ export const Footer: React.FC = () => {
   ];
 
   return (
-    <footer className="bg-white border-t border-stone-200/90 text-slate-900">
+    <footer className="bg-[var(--bg-elevated)] border-t border-[var(--border-subtle)] text-[var(--text-primary)]">
       <div className={`${themeTokens.layout.container} py-14 sm:py-16`}>
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-10 pb-12 border-b border-stone-200/80">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-10 pb-12 border-b border-[var(--border-subtle)]">
           {/* Brand Column */}
           <div className="md:col-span-5 space-y-4">
             <a
@@ -23,24 +23,24 @@ export const Footer: React.FC = () => {
                 e.preventDefault();
                 navigateTo('/');
               }}
-              className="inline-block text-lg font-bold tracking-tight text-slate-900 whitespace-nowrap"
+              className="inline-block text-lg font-bold tracking-tight text-[var(--text-primary)] whitespace-nowrap"
             >
               {siteConfig.brand.name}
             </a>
-            <p className="text-sm font-medium text-slate-800 max-w-sm">
+            <p className="text-sm font-medium text-[var(--text-primary)] max-w-sm">
               {siteConfig.brand.positioning}
             </p>
-            <p className="text-sm text-slate-600 leading-relaxed max-w-md">
+            <p className="text-sm text-[var(--text-secondary)] leading-relaxed max-w-md">
               {siteConfig.brand.description}
             </p>
-            <p className="text-xs text-stone-500 pt-1">
+            <p className="font-mono text-xs text-[var(--text-secondary)] pt-1">
               {siteConfig.brand.domain} · {siteConfig.brand.location}
             </p>
           </div>
 
           {/* Pages Navigation Mirror */}
           <div className="md:col-span-3 space-y-3">
-            <h2 className="text-xs font-semibold tracking-wide text-slate-900">
+            <h2 className="font-mono text-xs font-semibold tracking-wider text-[var(--accent-primary)]">
               Navigation
             </h2>
             <ul className="space-y-2.5">
@@ -52,7 +52,7 @@ export const Footer: React.FC = () => {
                       e.preventDefault();
                       navigateTo(item.path);
                     }}
-                    className="text-sm text-slate-600 hover:text-blue-700 transition-colors whitespace-nowrap"
+                    className="text-sm text-[var(--text-secondary)] hover:text-[var(--accent-primary)] transition-colors whitespace-nowrap"
                   >
                     {item.label}
                   </a>
@@ -63,19 +63,21 @@ export const Footer: React.FC = () => {
 
           {/* Services & Direct Inquiry */}
           <div className="md:col-span-4 space-y-3">
-            <h2 className="text-xs font-semibold tracking-wide text-slate-900">
+            <h2 className="font-mono text-xs font-semibold tracking-wider text-[var(--accent-primary)]">
               Capabilities & Contact
             </h2>
-            <ul className="space-y-2 text-sm text-slate-600">
+            <ul className="space-y-2 text-sm text-[var(--text-secondary)]">
               <li>01. {siteConfig.servicesSummary.core.title}</li>
               <li>02. {siteConfig.servicesSummary.supporting.title}</li>
               <li>03. {siteConfig.servicesSummary.recurring.title}</li>
             </ul>
             <div className="pt-3 space-y-1">
-              <p className="text-xs text-stone-500">Direct project inquiries</p>
+              <p className="font-mono text-xs text-[var(--text-secondary)]">
+                Direct project inquiries
+              </p>
               <a
                 href={`mailto:${siteConfig.contact.email}`}
-                className="text-sm font-semibold text-blue-700 hover:underline"
+                className="text-sm font-mono font-semibold text-[var(--accent-primary)] hover:underline"
               >
                 {siteConfig.contact.email}
               </a>
@@ -84,7 +86,7 @@ export const Footer: React.FC = () => {
         </div>
 
         {/* Quiet Bottom Row */}
-        <div className="pt-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-xs text-stone-500">
+        <div className="pt-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 font-mono text-xs text-[var(--text-secondary)]">
           <p>
             © {currentYear} {siteConfig.brand.name} ({siteConfig.brand.domain}). All rights reserved.
           </p>
@@ -96,7 +98,7 @@ export const Footer: React.FC = () => {
                   href={social.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hover:text-slate-900 transition-colors whitespace-nowrap"
+                  className="hover:text-[var(--text-primary)] transition-colors whitespace-nowrap"
                 >
                   {social.platform}
                 </a>

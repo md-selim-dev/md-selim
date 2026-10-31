@@ -24,7 +24,9 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
         <h1 className={themeTokens.typography.pageHeadline}>{title}</h1>
         <p className={themeTokens.typography.bodyLead}>{description}</p>
         {metaLine && (
-          <p className="text-xs text-stone-500 pt-1">{metaLine}</p>
+          <p className="font-mono text-xs text-[var(--text-secondary)] pt-1">
+            {metaLine}
+          </p>
         )}
         {actions && <div className="pt-2 flex flex-wrap items-center gap-4">{actions}</div>}
       </div>

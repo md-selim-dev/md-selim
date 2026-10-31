@@ -20,7 +20,7 @@ const INITIAL_FORM: InquiryFormState = {
   email: '',
   businessName: '',
   websiteUrl: '',
-  serviceInterest: 'Webflow Website or Landing Page (Core Service)',
+  serviceInterest: '01. Webflow Website (Multi-Page Build)',
   projectTimeline: 'Within the next 30 days',
   projectDetails: '',
 };
@@ -41,13 +41,25 @@ export const ContactPage: React.FC = () => {
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email.trim())) {
-      setErrorMessage('Please enter a valid work email address.');
+      setErrorMessage('Please enter a valid email address.');
       return;
+    }
+
+    if (formData.websiteUrl.trim()) {
+      try {
+        const candidate = formData.websiteUrl.trim().startsWith('http')
+          ? formData.websiteUrl.trim()
+          : `https://${formData.websiteUrl.trim()}`;
+        new URL(candidate);
+      } catch {
+        setErrorMessage('Please enter a valid website URL (or leave the field blank).');
+        return;
+      }
     }
 
     if (formData.projectDetails.trim().length < 15) {
       setErrorMessage(
-        'Please share a brief summary of your business and what you would like to achieve.'
+        'Please include a brief description of your business and what you would like help with (at least 15 characters).'
       );
       return;
     }
@@ -59,9 +71,9 @@ export const ContactPage: React.FC = () => {
     <div>
       <PageHeader
         kicker="Contact & Project Inquiry"
-        title="Start a conversation about your website."
-        description="Whether you need a new Webflow website, a technical SEO foundation, or reliable ongoing maintenance, fill out the brief below and I will respond within one business day."
-        metaLine={`Direct email: ${siteConfig.contact.email} · Typical response: ${siteConfig.contact.responseWindow}`}
+        title="Discuss your website project."
+        description="Whether you are planning a new Webflow website, a focused landing page, an on-page and technical SEO setup, or ongoing website maintenance, share your details below."
+        metaLine={`Direct email: ${siteConfig.contact.email} · Typical response window: ${siteConfig.contact.responseWindow}`}
       />
 
       <SectionContainer surface="canvas" spacing="default">
@@ -69,39 +81,44 @@ export const ContactPage: React.FC = () => {
           {/* Left Column: Inquiry Form or Confirmation State */}
           <div className="lg:col-span-7">
             {submittedBrief ? (
-              <div className="rounded-xl bg-white border border-stone-200/90 p-7 sm:p-9 space-y-6">
-                <div className="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-blue-50 text-blue-700">
+              <div className="ds-card p-7 sm:p-9 space-y-6">
+                <div className="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-[var(--bg-interactive)] border border-[var(--border-interactive)] text-[var(--accent-primary)]">
                   <Check className="w-5 h-5" />
                 </div>
 
                 <div className="space-y-2">
-                  <p className="text-xs font-mono text-blue-700 font-semibold">
-                    Inquiry Received
+                  <p className="text-xs font-mono text-[var(--accent-primary)] font-semibold">
+                    Inquiry Recorded
                   </p>
-                  <h2 className="text-2xl font-bold text-slate-900">
+                  <h2 className="text-2xl font-bold text-[var(--text-primary)]">
                     Thank you, {submittedBrief.fullName}.
                   </h2>
-                  <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
-                    Your project brief for{' '}
-                    <strong className="text-slate-900">
-                      {submittedBrief.businessName || 'your business'}
+                  <p className="text-sm sm:text-base text-[var(--text-secondary)] leading-relaxed">
+                    Your inquiry for{' '}
+                    <strong className="text-[var(--text-primary)]">
+                      {submittedBrief.businessName || 'your project'}
                     </strong>{' '}
-                    has been recorded. I will review your details and reply to{' '}
-                    <strong className="text-slate-900">{submittedBrief.email}</strong> within
-                    one business day with next steps.
+                    has been received. I will review your notes and reply to{' '}
+                    <strong className="text-[var(--text-primary)]">
+                      {submittedBrief.email}
+                    </strong>{' '}
+                    within one business day.
                   </p>
                 </div>
 
-                <div className="rounded-lg bg-[#FAF9F6] border border-stone-200/80 p-4 space-y-2 text-xs text-slate-700">
+                <div className="ds-surface-inset p-4 space-y-2 text-xs text-[var(--text-secondary)]">
                   <p>
-                    <strong>Selected Service:</strong> {submittedBrief.serviceInterest}
+                    <strong className="text-[var(--text-primary)]">Selected Service:</strong>{' '}
+                    {submittedBrief.serviceInterest}
                   </p>
                   <p>
-                    <strong>Target Timeline:</strong> {submittedBrief.projectTimeline}
+                    <strong className="text-[var(--text-primary)]">Target Timeline:</strong>{' '}
+                    {submittedBrief.projectTimeline}
                   </p>
                   {submittedBrief.websiteUrl && (
                     <p>
-                      <strong>Current URL:</strong> {submittedBrief.websiteUrl}
+                      <strong className="text-[var(--text-primary)]">Website URL:</strong>{' '}
+                      {submittedBrief.websiteUrl}
                     </p>
                   )}
                 </div>
@@ -115,7 +132,7 @@ export const ContactPage: React.FC = () => {
                       setSubmittedBrief(null);
                     }}
                   >
-                    Submit Another Inquiry
+                    Send Another Inquiry
                   </Button>
                 </div>
               </div>
@@ -123,19 +140,21 @@ export const ContactPage: React.FC = () => {
               <form
                 onSubmit={handleSubmit}
                 noValidate
-                className="rounded-xl bg-white border border-stone-200/90 p-6 sm:p-9 space-y-6"
+                className="ds-card p-6 sm:p-9 space-y-6"
               >
                 <div className="space-y-1">
-                  <h2 className="text-lg font-bold text-slate-900">Project Inquiry Brief</h2>
-                  <p className="text-xs text-stone-500">
-                    All fields marked with * are required.
+                  <h2 className="text-lg font-bold text-[var(--text-primary)]">
+                    Project Inquiry Form
+                  </h2>
+                  <p className="font-mono text-xs text-[var(--text-secondary)]">
+                    Fields marked with * are required.
                   </p>
                 </div>
 
                 {errorMessage && (
                   <div
                     role="alert"
-                    className="p-3.5 rounded-lg bg-red-50 border border-red-200 text-xs font-medium text-red-800"
+                    className="p-3.5 rounded-lg bg-[var(--status-error-bg)] border border-[var(--status-error-border)] text-xs font-medium text-[var(--status-error-text)]"
                   >
                     {errorMessage}
                   </div>
@@ -145,7 +164,7 @@ export const ContactPage: React.FC = () => {
                   <div className="space-y-1.5">
                     <label
                       htmlFor="fullName"
-                      className="block text-xs font-semibold text-slate-900"
+                      className="block font-mono text-xs font-medium text-[var(--text-primary)]"
                     >
                       Your Name *
                     </label>
@@ -157,17 +176,17 @@ export const ContactPage: React.FC = () => {
                       onChange={(e) =>
                         setFormData((prev) => ({ ...prev, fullName: e.target.value }))
                       }
-                      placeholder="e.g. Sarah Jenkins"
-                      className="w-full px-3.5 py-2.5 text-sm rounded-lg bg-[#FAF9F6] border border-stone-300 text-slate-900 focus:outline-none focus:border-blue-700"
+                      placeholder="e.g. Alex Morgan"
+                      className="ds-input"
                     />
                   </div>
 
                   <div className="space-y-1.5">
                     <label
                       htmlFor="email"
-                      className="block text-xs font-semibold text-slate-900"
+                      className="block font-mono text-xs font-medium text-[var(--text-primary)]"
                     >
-                      Work Email *
+                      Email Address *
                     </label>
                     <input
                       id="email"
@@ -177,8 +196,8 @@ export const ContactPage: React.FC = () => {
                       onChange={(e) =>
                         setFormData((prev) => ({ ...prev, email: e.target.value }))
                       }
-                      placeholder="sarah@company.com"
-                      className="w-full px-3.5 py-2.5 text-sm rounded-lg bg-[#FAF9F6] border border-stone-300 text-slate-900 focus:outline-none focus:border-blue-700"
+                      placeholder="alex@company.com"
+                      className="ds-input"
                     />
                   </div>
                 </div>
@@ -187,7 +206,7 @@ export const ContactPage: React.FC = () => {
                   <div className="space-y-1.5">
                     <label
                       htmlFor="businessName"
-                      className="block text-xs font-semibold text-slate-900"
+                      className="block font-mono text-xs font-medium text-[var(--text-primary)]"
                     >
                       Business Name
                     </label>
@@ -198,17 +217,17 @@ export const ContactPage: React.FC = () => {
                       onChange={(e) =>
                         setFormData((prev) => ({ ...prev, businessName: e.target.value }))
                       }
-                      placeholder="e.g. Apex Advisory Group"
-                      className="w-full px-3.5 py-2.5 text-sm rounded-lg bg-[#FAF9F6] border border-stone-300 text-slate-900 focus:outline-none focus:border-blue-700"
+                      placeholder="e.g. Morgan Consulting"
+                      className="ds-input"
                     />
                   </div>
 
                   <div className="space-y-1.5">
                     <label
                       htmlFor="websiteUrl"
-                      className="block text-xs font-semibold text-slate-900"
+                      className="block font-mono text-xs font-medium text-[var(--text-primary)]"
                     >
-                      Current Website URL (if applicable)
+                      Current Website URL (Optional)
                     </label>
                     <input
                       id="websiteUrl"
@@ -218,7 +237,7 @@ export const ContactPage: React.FC = () => {
                         setFormData((prev) => ({ ...prev, websiteUrl: e.target.value }))
                       }
                       placeholder="https://example.com"
-                      className="w-full px-3.5 py-2.5 text-sm rounded-lg bg-[#FAF9F6] border border-stone-300 text-slate-900 focus:outline-none focus:border-blue-700"
+                      className="ds-input"
                     />
                   </div>
                 </div>
@@ -227,9 +246,9 @@ export const ContactPage: React.FC = () => {
                   <div className="space-y-1.5">
                     <label
                       htmlFor="serviceInterest"
-                      className="block text-xs font-semibold text-slate-900"
+                      className="block font-mono text-xs font-medium text-[var(--text-primary)]"
                     >
-                      Primary Service Needed *
+                      Service Needed *
                     </label>
                     <select
                       id="serviceInterest"
@@ -237,19 +256,22 @@ export const ContactPage: React.FC = () => {
                       onChange={(e) =>
                         setFormData((prev) => ({ ...prev, serviceInterest: e.target.value }))
                       }
-                      className="w-full px-3.5 py-2.5 text-sm rounded-lg bg-[#FAF9F6] border border-stone-300 text-slate-900 focus:outline-none focus:border-blue-700"
+                      className="ds-input"
                     >
-                      <option value="Webflow Website or Landing Page (Core Service)">
-                        01. Webflow Website or Landing Page (Core)
+                      <option value="01. Webflow Website (Multi-Page Build)">
+                        01. Webflow Website (Multi-Page Build)
                       </option>
-                      <option value="Basic On-Page & Technical SEO Setup (Supporting)">
-                        02. Basic On-Page & Technical SEO Setup
+                      <option value="02. Focused Landing Page">
+                        02. Focused Landing Page
                       </option>
-                      <option value="Website Updates & Ongoing Maintenance (Recurring)">
-                        03. Website Updates & Ongoing Maintenance
+                      <option value="03. Basic On-Page SEO & Technical SEO Setup">
+                        03. Basic On-Page SEO & Technical SEO Setup
                       </option>
-                      <option value="Complete Package (Webflow Build + SEO + Ongoing Care)">
-                        Complete Package (Build + SEO + Ongoing Care)
+                      <option value="04. Website Updates & Ongoing Maintenance">
+                        04. Website Updates & Ongoing Maintenance
+                      </option>
+                      <option value="05. Complete Build + SEO Setup + Ongoing Care">
+                        05. Complete Build + SEO Setup + Ongoing Care
                       </option>
                     </select>
                   </div>
@@ -257,7 +279,7 @@ export const ContactPage: React.FC = () => {
                   <div className="space-y-1.5">
                     <label
                       htmlFor="projectTimeline"
-                      className="block text-xs font-semibold text-slate-900"
+                      className="block font-mono text-xs font-medium text-[var(--text-primary)]"
                     >
                       Preferred Timeline
                     </label>
@@ -267,15 +289,13 @@ export const ContactPage: React.FC = () => {
                       onChange={(e) =>
                         setFormData((prev) => ({ ...prev, projectTimeline: e.target.value }))
                       }
-                      className="w-full px-3.5 py-2.5 text-sm rounded-lg bg-[#FAF9F6] border border-stone-300 text-slate-900 focus:outline-none focus:border-blue-700"
+                      className="ds-input"
                     >
-                      <option value="Immediately / Within 2 weeks">
-                        Immediately / Within 2 weeks
-                      </option>
+                      <option value="Within 2 weeks">Within 2 weeks</option>
                       <option value="Within the next 30 days">Within the next 30 days</option>
                       <option value="1 to 3 months out">1 to 3 months out</option>
-                      <option value="Flexible / Exploring options">
-                        Flexible / Exploring options
+                      <option value="Flexible / Planning ahead">
+                        Flexible / Planning ahead
                       </option>
                     </select>
                   </div>
@@ -284,9 +304,9 @@ export const ContactPage: React.FC = () => {
                 <div className="space-y-1.5">
                   <label
                     htmlFor="projectDetails"
-                    className="block text-xs font-semibold text-slate-900"
+                    className="block font-mono text-xs font-medium text-[var(--text-primary)]"
                   >
-                    Project Goals & Context *
+                    Project Overview & Goals *
                   </label>
                   <textarea
                     id="projectDetails"
@@ -296,73 +316,76 @@ export const ContactPage: React.FC = () => {
                     onChange={(e) =>
                       setFormData((prev) => ({ ...prev, projectDetails: e.target.value }))
                     }
-                    placeholder="Tell me briefly about your service business, what isn't working with your current website, and what a successful outcome looks like..."
-                    className="w-full px-3.5 py-2.5 text-sm rounded-lg bg-[#FAF9F6] border border-stone-300 text-slate-900 focus:outline-none focus:border-blue-700"
+                    placeholder="Briefly describe your business, what services you offer, and what you want your website to accomplish..."
+                    className="ds-input"
                   />
                 </div>
 
                 <div className="pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                  <p className="text-xs text-stone-500">
-                    Your information is kept strictly confidential.
+                  <p className="font-mono text-xs text-[var(--text-secondary)]">
+                    No automated sales lists. I respond personally to every inquiry.
                   </p>
                   <Button type="submit" variant="primary" size="lg">
-                    Send Project Inquiry
+                    Send Inquiry
                   </Button>
                 </div>
               </form>
             )}
           </div>
 
-          {/* Right Column: What Happens Next & Direct Contact Details */}
+          {/* Right Column: Process & Direct Contact */}
           <div className="lg:col-span-5 space-y-6">
-            <div className="rounded-xl bg-white border border-stone-200/90 p-6 sm:p-8 space-y-5">
-              <h2 className="text-base font-bold text-slate-900">
-                What happens after you reach out?
+            <div className="ds-card p-6 sm:p-8 space-y-5">
+              <h2 className="text-base font-bold text-[var(--text-primary)]">
+                What happens after you submit?
               </h2>
-              <ol className="space-y-4 text-sm text-slate-600">
+              <ol className="space-y-4 text-sm text-[var(--text-secondary)]">
                 <li className="space-y-1">
-                  <p className="font-semibold text-slate-900">
-                    01. Initial Review ({siteConfig.contact.responseWindow})
+                  <p className="font-semibold text-[var(--text-primary)]">
+                    <span className="font-mono text-[var(--accent-primary)]">01.</span>{' '}
+                    Review ({siteConfig.contact.responseWindow})
                   </p>
                   <p className="text-xs leading-relaxed">
-                    I review your brief and, if you have an existing site, perform a quick preliminary check of its structure and technical SEO.
+                    I review your notes and any existing website URL you share to understand your context.
                   </p>
                 </li>
                 <li className="space-y-1">
-                  <p className="font-semibold text-slate-900">
-                    02. {siteConfig.contact.consultationDuration}
+                  <p className="font-semibold text-[var(--text-primary)]">
+                    <span className="font-mono text-[var(--accent-primary)]">02.</span>{' '}
+                    Discovery Conversation
                   </p>
                   <p className="text-xs leading-relaxed">
-                    We meet to discuss your services, client acquisition goals, and whether a new Webflow build, landing page, or SEO setup is the right fit.
+                    We discuss your goals, page requirements, and whether my services are a practical fit.
                   </p>
                 </li>
                 <li className="space-y-1">
-                  <p className="font-semibold text-slate-900">
-                    03. Clear Scope & Fixed Proposal
+                  <p className="font-semibold text-[var(--text-primary)]">
+                    <span className="font-mono text-[var(--accent-primary)]">03.</span>{' '}
+                    Written Scope & Timeline
                   </p>
                   <p className="text-xs leading-relaxed">
-                    You receive a transparent written proposal detailing exact deliverables, timeline milestones, and investment options.
+                    You receive a clear written proposal covering exact deliverables, exclusions, and schedule.
                   </p>
                 </li>
               </ol>
             </div>
 
-            <div className="rounded-xl bg-[#F3F2EE] border border-stone-200/80 p-6 space-y-3">
-              <div className="flex items-center gap-2 text-slate-900 font-semibold text-sm">
-                <Mail className="w-4 h-4 text-blue-700" />
-                <span>Prefer direct email?</span>
+            <div className="ds-surface-interactive p-6 space-y-3">
+              <div className="flex items-center gap-2 text-[var(--text-primary)] font-semibold text-sm">
+                <Mail className="w-4 h-4 text-[var(--accent-primary)]" />
+                <span>Direct Email</span>
               </div>
-              <p className="text-xs text-slate-600 leading-relaxed">
-                You can email me directly at any time with your website link or project questions:
+              <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
+                Prefer to write directly from your email client? Reach out at:
               </p>
               <a
                 href={`mailto:${siteConfig.contact.email}`}
-                className="inline-block text-sm font-mono font-semibold text-blue-700 hover:underline"
+                className="inline-block text-sm font-mono font-semibold text-[var(--accent-primary)] hover:underline"
               >
                 {siteConfig.contact.email}
               </a>
-              <p className="text-xs text-stone-500 pt-1">
-                Working hours: {siteConfig.contact.workingHours}
+              <p className="font-mono text-xs text-[var(--text-secondary)] pt-1">
+                Hours: {siteConfig.contact.workingHours}
               </p>
             </div>
           </div>

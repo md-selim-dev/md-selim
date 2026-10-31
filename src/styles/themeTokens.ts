@@ -1,34 +1,57 @@
 /**
- * Centralized Design Tokens & Style Presets for mdselim.com
- * Enforces the 60-30-10 color budget, strict typographic scale, and spatial hierarchy.
+ * Centralized Design System Tokens & Class Mappings for mdselim.com
+ * Phase 02: Botanical Obsidian Visual Identity
+ *
+ * Palette:
+ * - Main background (60%): #061411 (--bg-canvas)
+ * - Elevated surfaces (30%): #0B241F (--bg-elevated)
+ * - Interactive surfaces: #14332D (--bg-interactive)
+ * - Primary accent (10%): #10B981 (--accent-primary)
+ * - Primary text: #F0FDF8 (--text-primary)
+ * - Secondary text: #8DAAA2 (--text-secondary)
  */
 export const themeTokens = {
   colors: {
-    canvas: 'bg-[#FAF9F6] text-slate-900',
-    surfacePrimary: 'bg-white border border-stone-200/90',
-    surfaceMuted: 'bg-[#F3F2EE] border border-stone-200/80',
-    surfaceDark: 'bg-slate-900 text-stone-100',
-    accentText: 'text-blue-700',
-    accentBg: 'bg-blue-700 hover:bg-blue-800 text-white',
-    hairline: 'border-stone-200/90',
+    canvas: 'bg-[var(--bg-canvas)] text-[var(--text-primary)]',
+    surfaceElevated: 'bg-[var(--bg-elevated)] border border-[var(--border-subtle)]',
+    surfaceInteractive: 'bg-[var(--bg-interactive)] border border-[var(--border-default)]',
+    surfaceInset: 'bg-[var(--bg-canvas)] border border-[var(--border-subtle)]',
+    accentText: 'text-[var(--accent-primary)]',
+    accentBg: 'bg-[var(--accent-primary)] text-[var(--accent-on-primary)] hover:bg-[var(--accent-primary-hover)]',
+    hairline: 'border-[var(--border-subtle)]',
+    hairlineStrong: 'border-[var(--border-default)]',
   },
   typography: {
-    kicker: 'text-xs font-medium tracking-wide text-stone-600',
+    kicker:
+      'font-mono text-xs font-medium tracking-wider text-[var(--accent-primary)]',
     heroHeadline:
-      'text-[clamp(2.25rem,4vw,3.75rem)] font-bold tracking-tight text-slate-900 leading-[1.08]',
+      'text-[length:var(--text-display-hero)] font-bold tracking-tight text-[var(--text-primary)] leading-[1.08]',
     pageHeadline:
-      'text-[clamp(2rem,3.4vw,3.25rem)] font-bold tracking-tight text-slate-900 leading-[1.1]',
+      'text-[length:var(--text-display-page)] font-bold tracking-tight text-[var(--text-primary)] leading-[1.1]',
     sectionHeadline:
-      'text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 leading-[1.2]',
-    cardTitle: 'text-lg sm:text-xl font-semibold tracking-tight text-slate-900',
-    bodyLead: 'text-base sm:text-lg text-slate-600 leading-relaxed max-w-[65ch]',
-    bodyRegular: 'text-[15px] sm:text-base text-slate-600 leading-relaxed max-w-[68ch]',
-    metadata: 'text-xs text-stone-500 leading-normal',
-    metricValue: 'font-mono tabular-nums font-semibold tracking-tight text-slate-900',
+      'text-2xl sm:text-3xl font-bold tracking-tight text-[var(--text-primary)] leading-[1.2]',
+    cardTitle:
+      'text-lg sm:text-xl font-semibold tracking-tight text-[var(--text-primary)]',
+    bodyLead:
+      'text-base sm:text-lg text-[var(--text-secondary)] leading-relaxed max-w-[65ch]',
+    bodyRegular:
+      'text-[15px] sm:text-base text-[var(--text-secondary)] leading-relaxed max-w-[68ch]',
+    metadata:
+      'font-mono text-xs text-[var(--text-secondary)] leading-normal',
+    metricValue:
+      'font-mono tabular-nums font-bold tracking-tight text-[var(--text-primary)]',
+  },
+  components: {
+    card: 'ds-card',
+    cardInteractive: 'ds-card-interactive',
+    cardActive: 'ds-card-active',
+    surfaceInset: 'ds-surface-inset',
+    surfaceInteractive: 'ds-surface-interactive',
+    input: 'ds-input',
   },
   layout: {
-    container: 'mx-auto w-full max-w-[1200px] px-5 sm:px-8 lg:px-10',
-    sectionSpacing: 'py-16 sm:py-20 lg:py-24',
-    sectionSpacingCompact: 'py-12 sm:py-16',
+    container: 'ds-container',
+    sectionSpacing: 'ds-section-default',
+    sectionSpacingCompact: 'ds-section-compact',
   },
 } as const;

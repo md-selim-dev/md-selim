@@ -30,10 +30,10 @@ export const Navigation: React.FC<NavigationProps> = ({
                 navigateTo(item.path);
                 if (onNavigate) onNavigate();
               }}
-              className={`px-3 py-2.5 text-sm font-medium rounded-md transition-colors whitespace-nowrap shrink-0 ${
+              className={`px-3.5 py-2.5 text-sm font-medium rounded-md transition-colors whitespace-nowrap shrink-0 ${
                 isActive
-                  ? 'text-blue-700 bg-blue-50/70 font-semibold'
-                  : 'text-slate-700 hover:text-slate-900 hover:bg-stone-100/80'
+                  ? 'text-[var(--accent-primary)] bg-[var(--bg-interactive)] font-semibold'
+                  : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)]'
               }`}
             >
               {item.label}
@@ -60,8 +60,8 @@ export const Navigation: React.FC<NavigationProps> = ({
             }}
             className={`relative py-1 text-sm font-medium transition-colors whitespace-nowrap shrink-0 ${
               isActive
-                ? 'text-slate-900 after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-blue-700'
-                : 'text-slate-600 hover:text-slate-900'
+                ? 'text-[var(--text-primary)] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-[var(--accent-primary)]'
+                : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
             }`}
           >
             {item.label}

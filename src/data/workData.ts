@@ -1,245 +1,187 @@
-export type WorkCategory = 'All' | 'Webflow Websites' | 'Landing Pages' | 'Technical SEO';
+export type ProjectClassification = 'All' | 'Demo / Concept Build' | 'Client Architecture';
 
-export interface CaseStudy {
+export interface ProjectItem {
   id: string;
   index: string;
   slug: string;
-  client: string;
+  title: string;
+  projectType: Exclude<ProjectClassification, 'All'>;
+  projectTypeNote: string;
   industry: string;
-  location: string;
-  year: string;
-  category: Exclude<WorkCategory, 'All'>;
-  servicesProvided: string[];
-  headline: string;
+  serviceFocus: string[];
   summary: string;
-  challenge: string;
-  solution: string;
-  seoFoundation: string[];
-  metrics: {
-    value: string;
+  contextAndProblem: string;
+  structuralApproach: string;
+  uxHighlights: string[];
+  seoImplementation: string[];
+  technicalSpecs: {
     label: string;
-    timeframe: string;
+    value: string;
   }[];
-  testimonial: {
-    quote: string;
-    author: string;
-    role: string;
-    company: string;
-  };
   wireframeVariant: 'legal' | 'clinic' | 'advisory' | 'engineering';
 }
 
-export const workData: CaseStudy[] = [
+/**
+ * Portfolio & Architecture Showcases for mdselim.com
+ * Clearly distinguishes Demo / Concept reference builds from Client Architecture work,
+ * without invented testimonials or fabricated performance claims.
+ */
+export const workData: ProjectItem[] = [
   {
-    id: 'meridian-legal',
+    id: 'meridian-commercial-advisory',
     index: '01',
-    slug: 'meridian-commercial-law',
-    client: 'Meridian Commercial Law',
-    industry: 'B2B Legal & Corporate Advisory',
-    location: 'London, UK',
-    year: '2026',
-    category: 'Webflow Websites',
-    servicesProvided: [
-      'Webflow Website Build',
-      'Information Architecture',
-      'On-Page & Technical SEO',
+    slug: 'meridian-commercial-advisory',
+    title: 'Meridian Commercial Advisory — B2B Service Website Architecture',
+    projectType: 'Demo / Concept Build',
+    projectTypeNote:
+      'Demonstration architecture created to showcase multi-page B2B service positioning, practice-area hierarchy, and technical SEO structure.',
+    industry: 'B2B Legal & Commercial Advisory',
+    serviceFocus: [
+      'Webflow Website Architecture',
+      'Service Page Structuring',
+      'On-Page & Technical SEO Setup',
     ],
-    headline:
-      'Restructuring a 14-page commercial law practice website for practice-area clarity and qualified founder inquiries.',
     summary:
-      'Meridian had strong word-of-mouth referrals but an outdated website that buried their core commercial contract and M&A advisory services. We rebuilt the site in Webflow with dedicated service silos and structured local/practice schema.',
-    challenge:
-      'Prospective business clients could not distinguish Meridian’s core commercial retainers from general legal services, resulting in unqualified phone inquiries and high bounce rates on mobile.',
-    solution:
-      'Designed an editorial, high-credibility Webflow architecture with clear practice-area pages, transparent engagement steps, attorney profile CMS collections, and a pre-qualifying consultation intake flow.',
-    seoFoundation: [
-      'Practice-area semantic heading architecture & internal linking silos',
-      'LegalService & Attorney JSON-LD schema markup across 14 pages',
-      '301 redirect migration from legacy WordPress URLs with zero traffic drop',
+      'A complete multi-page reference build demonstrating how a small commercial advisory firm can separate distinct service lines, explain engagement steps clearly, and capture pre-qualified consultation inquiries.',
+    contextAndProblem:
+      'Small professional practices often list all of their capabilities on a single generic page. When business owners visit, they struggle to tell whether the firm handles their specific type of commercial matter or how an initial consultation works.',
+    structuralApproach:
+      'Organized the website into dedicated service pages with a consistent four-part layout: clear service definition, who it is for, step-by-step engagement process, and a focused inquiry intake form.',
+    uxHighlights: [
+      'Clear top-level navigation separating Core Practice Areas, About, Insights, and Contact',
+      'Scannable service comparison blocks written in plain business language',
+      'Structured consultation request form that collects matter type and timeline upfront',
+      'Responsive grid layout tested across desktop, tablet, and mobile viewports',
     ],
-    metrics: [
-      {
-        value: '+138%',
-        label: 'Qualified Consultation Inquiries',
-        timeframe: 'Within 5 months of launch',
-      },
-      {
-        value: '99 / 100',
-        label: 'Google PageSpeed Performance',
-        timeframe: 'Mobile & Desktop Core Web Vitals',
-      },
-      {
-        value: '-42%',
-        label: 'Unqualified General Inquiries',
-        timeframe: 'Via structured intake qualification',
-      },
+    seoImplementation: [
+      'Strict single-H1 semantic heading hierarchy on the homepage and all practice-area pages',
+      'Dedicated meta title and description templates for each service page',
+      'ProfessionalService JSON-LD structured data schema specification',
+      'Internal linking architecture connecting explanatory articles to relevant service pages',
     ],
-    testimonial: {
-      quote:
-        'Before working with MD Selim, prospects constantly asked what we actually specialized in. Our new Webflow site communicates our commercial focus immediately, and our monthly discovery calls have more than doubled.',
-      author: 'Alistair Vance',
-      role: 'Managing Partner',
-      company: 'Meridian Commercial Law',
-    },
+    technicalSpecs: [
+      { label: 'Project Classification', value: 'Demo / Concept Build' },
+      { label: 'Platform Architecture', value: 'Webflow + Semantic HTML5/CSS3' },
+      { label: 'Page Templates', value: 'Home, 4 Service Pages, About, Insights, Contact' },
+      { label: 'SEO Foundation', value: 'Semantic Headings, Sitemap, JSON-LD Schema' },
+    ],
     wireframeVariant: 'legal',
   },
   {
-    id: 'nordic-dental-specialist',
+    id: 'velo-specialist-clinic',
     index: '02',
-    slug: 'velo-restorative-clinic',
-    client: 'Velo Restorative & Implant Clinic',
-    industry: 'Private Healthcare & Specialist Dentistry',
-    location: 'Toronto, Canada',
-    year: '2026',
-    category: 'Landing Pages',
-    servicesProvided: [
-      'Conversion Landing Pages',
-      'Technical SEO Setup',
-      'Ongoing Website Care',
+    slug: 'velo-specialist-clinic',
+    title: 'Velo Specialist Clinic — Treatment Landing Page System',
+    projectType: 'Demo / Concept Build',
+    projectTypeNote:
+      'Demonstration landing page system illustrating high-clarity patient education, treatment workflows, and local SEO structure for private clinics.',
+    industry: 'Private Healthcare & Specialist Clinic',
+    serviceFocus: [
+      'Focused Landing Pages',
+      'Mobile UX Clarity',
+      'Local On-Page SEO Structure',
     ],
-    headline:
-      'High-trust treatment landing pages and local SEO architecture for a multi-specialist restorative clinic.',
     summary:
-      'Created a suite of treatment-specific Webflow landing pages paired with clear patient education sections, fee transparency tables, and technical local SEO setup.',
-    challenge:
-      'Paid search and organic visitors were landing on a generic homepage with slow-loading background videos and no clear path to book a specialist consultation.',
-    solution:
-      'Built dedicated, fast-loading Webflow landing pages for each specialist procedure, featuring calm editorial typography, clear before-and-after clinical workflows, and friction-free appointment request forms.',
-    seoFoundation: [
-      'MedicalClinic & Physician structured data with verified local citations',
-      'Sub-1.1s Largest Contentful Paint (LCP) across mobile cellular connections',
-      'Topic-clustered FAQ sections addressing real patient pre-treatment questions',
+      'A focused landing page blueprint built for local specialist clinics that need to explain treatments calmly, answer common patient questions upfront, and make appointment requests straightforward on mobile devices.',
+    contextAndProblem:
+      'Patients searching for specialist treatments on mobile devices are often met with cluttered menus, slow-loading stock videos, and buried contact details—causing hesitation at the moment they are ready to book.',
+    structuralApproach:
+      'Designed a calm, distraction-free landing page template that leads with treatment clarity, outlines what to expect during the first visit, answers frequent patient questions, and provides an accessible appointment request section.',
+    uxHighlights: [
+      'Mobile-first reading flow with comfortable line lengths and high-contrast typography',
+      'Step-by-step patient journey breakdown reducing first-visit uncertainty',
+      'Dedicated FAQ accordion addressing practical questions before booking',
+      'Accessible tap targets and streamlined appointment inquiry fields',
     ],
-    metrics: [
-      {
-        value: '+84%',
-        label: 'Organic Local Search Bookings',
-        timeframe: 'Over 6 months post-deployment',
-      },
-      {
-        value: '0.9s',
-        label: 'Largest Contentful Paint (LCP)',
-        timeframe: 'Verified across mobile devices',
-      },
-      {
-        value: '4.8%',
-        label: 'Visitor-to-Consultation Rate',
-        timeframe: 'Up from 1.9% on legacy site',
-      },
+    seoImplementation: [
+      'LocalBusiness and MedicalClinic Schema.org structured data layout',
+      'Location-specific heading and metadata structure for local search relevance',
+      'Lightweight SVG and compressed asset strategy to keep mobile load times fast',
+      'Clean canonical URL and OpenGraph sharing configuration',
     ],
-    testimonial: {
-      quote:
-        'Selim brought calm structure to a complex clinical offering. Patients regularly mention how clear and reassuring our website feels compared to other clinics in the city.',
-      author: 'Dr. Elena Rostova',
-      role: 'Clinical Director',
-      company: 'Velo Restorative Clinic',
-    },
+    technicalSpecs: [
+      { label: 'Project Classification', value: 'Demo / Concept Build' },
+      { label: 'Primary Format', value: 'Conversion-Focused Landing Page' },
+      { label: 'Viewport Priority', value: 'Mobile-First Responsive Layout' },
+      { label: 'SEO Foundation', value: 'Local Schema, FAQ Structure, Fast Assets' },
+    ],
     wireframeVariant: 'clinic',
   },
   {
-    id: 'apex-building-consultants',
+    id: 'kaizen-structural-consultants',
     index: '03',
-    slug: 'kaizen-structural-surveying',
-    client: 'Kaizen Building & Structural Consultants',
-    industry: 'Commercial Surveying & Engineering Services',
-    location: 'Melbourne, Australia',
-    year: '2025',
-    category: 'Technical SEO',
-    servicesProvided: [
-      'Webflow Redesign',
-      'On-Page & Technical SEO',
-      'Monthly Improvement Retainer',
+    slug: 'kaizen-structural-consultants',
+    title: 'Kaizen Building Consultants — Technical Service Catalog & SEO Structure',
+    projectType: 'Demo / Concept Build',
+    projectTypeNote:
+      'Reference architecture demonstrating how technical surveying and engineering service providers can replace static PDFs with indexable web pages.',
+    industry: 'Surveying, Engineering & Property Services',
+    serviceFocus: [
+      'Webflow CMS Structure',
+      'Technical SEO Setup',
+      'Content Organization',
     ],
-    headline:
-      'Turning a technical engineering consultancy website into a consistent inbound lead channel.',
     summary:
-      'Full Webflow rebuild and technical SEO overhaul for a 12-person structural surveying firm serving commercial property managers and architects.',
-    challenge:
-      'Despite 15 years of industry credibility, Kaizen’s website had duplicate metadata, broken PDF spec sheets, and zero visibility for commercial structural inspection searches.',
-    solution:
-      'Architected a structured service catalog in Webflow CMS, converted static PDFs into indexable HTML case studies, and established a recurring monthly optimization cadence.',
-    seoFoundation: [
-      'Complete crawl error remediation & canonical tag standardization',
-      'Dedicated commercial service-area pages with authentic project proof',
-      'Ongoing monthly search query tracking and content expansion',
+      'An architectural blueprint for technical service firms that need to present complex inspection and consulting services in an organized, search-indexable format.',
+    contextAndProblem:
+      'Many established engineering and surveying businesses hide their most valuable service specifications inside downloadable PDF brochures that search engines struggle to index and mobile visitors dislike downloading.',
+    structuralApproach:
+      'Converted static service sheets into structured HTML pages managed through a clean CMS model, allowing each inspection service to have its own URL, scope checklist, deliverables list, and inquiry CTA.',
+    uxHighlights: [
+      'Structured specification tables presenting scope inclusions and exclusions clearly',
+      'Filterable project reference index organized by property and service type',
+      'Direct inquiry pathways tailored to commercial property managers and architects',
     ],
-    metrics: [
-      {
-        value: '+210%',
-        label: 'Organic Search Impressions',
-        timeframe: 'Within 6 months of technical setup',
-      },
-      {
-        value: '18',
-        label: 'Top-3 Local Service Rankings',
-        timeframe: 'High-intent commercial keywords',
-      },
-      {
-        value: '100%',
-        label: 'Core Web Vitals Pass Rate',
-        timeframe: 'Across all 26 indexed URLs',
-      },
+    seoImplementation: [
+      'Indexable HTML service specifications replacing unindexed PDF brochures',
+      'Clean URL taxonomy (/services/[service-slug]/) with breadcrumb hierarchy',
+      'XML sitemap and robots.txt rules configured for clean search engine crawling',
     ],
-    testimonial: {
-      quote:
-        'Having MD Selim handle both our initial Webflow build and our ongoing monthly updates has been seamless. Whenever we complete a major commercial project, it is live and optimized on the site within 48 hours.',
-      author: 'Marcus Thorne',
-      role: 'Principal Structural Engineer',
-      company: 'Kaizen Building Consultants',
-    },
+    technicalSpecs: [
+      { label: 'Project Classification', value: 'Demo / Concept Build' },
+      { label: 'Content Architecture', value: 'Structured CMS Service & Project Collections' },
+      { label: 'Key Focus', value: 'Clarity for Technical B2B Buyers' },
+      { label: 'SEO Foundation', value: 'Crawlable HTML Specs & Clean URL Taxonomy' },
+    ],
     wireframeVariant: 'advisory',
   },
   {
-    id: 'harbor-accounting-advisory',
+    id: 'mdselim-personal-brand-platform',
     index: '04',
-    slug: 'harbor-cpa-advisory',
-    client: 'Harbor Tax & Fractional CFO Advisory',
-    industry: 'Financial & Accounting Services',
-    location: 'Austin, USA',
-    year: '2025',
-    category: 'Webflow Websites',
-    servicesProvided: [
-      'Webflow Website & CMS',
-      'Service Tier Comparison UX',
-      'On-Page SEO Foundation',
+    slug: 'mdselim-personal-brand-platform',
+    title: 'MD SELIM (mdselim.com) — Personal Brand & Web Architecture Platform',
+    projectType: 'Client Architecture',
+    projectTypeNote:
+      'Production architecture for mdselim.com—built with custom code, centralized Botanical Obsidian design tokens, and Markdown-driven publishing.',
+    industry: 'Web Development & Technical SEO Studio',
+    serviceFocus: [
+      'Custom Code Architecture',
+      'Botanical Obsidian Design System',
+      'Markdown Content System',
     ],
-    headline:
-      'Clarifying fractional CFO and tax advisory packages for growing service agencies and founders.',
     summary:
-      'Designed and developed a high-clarity Webflow website that separates annual compliance work from high-margin monthly Fractional CFO retainers.',
-    challenge:
-      'Harbor was attracting price-sensitive individual tax prep inquiries when their goal was to sign recurring B2B advisory retainers.',
-    solution:
-      'Restructured the homepage positioning, created transparent tier comparison tables on the Services page, and built an Insights hub answering common founder financial questions.',
-    seoFoundation: [
-      'AccountingService schema & semantic comparison table markup',
-      'Internal link architecture connecting Insights articles to service tiers',
-      'Clean URL taxonomy and automated OpenGraph metadata templates',
+      'The live production codebase for mdselim.com, engineered to demonstrate modular frontend architecture, centralized CSS design tokens, transparent service scoping, and Markdown-based insights publishing.',
+    contextAndProblem:
+      'A web developer’s own website should serve as direct proof of their standards. It must load quickly, communicate services without hype, and maintain a clean separation between configuration, content, and presentation.',
+    structuralApproach:
+      'Built a modular architecture separating site configuration, service data, Markdown articles, layout shells, and reusable components under the Botanical Obsidian visual identity.',
+    uxHighlights: [
+      'Strict 3-zone top navigation bar with zero visual clutter',
+      'Transparent Services breakdown detailing exact deliverables and explicit exclusions',
+      'Markdown-powered Insights system for publishing practical guides cleanly',
+      'Centralized CSS custom properties enabling global design consistency',
     ],
-    metrics: [
-      {
-        value: '+65%',
-        label: 'Monthly Retainer Inquiries',
-        timeframe: 'In the first quarter after launch',
-      },
-      {
-        value: '3.2x',
-        label: 'Average Time on Service Pages',
-        timeframe: 'Compared to previous single-page layout',
-      },
-      {
-        value: '0.8s',
-        label: 'First Contentful Paint (FCP)',
-        timeframe: 'Global CDN edge delivery',
-      },
+    seoImplementation: [
+      'Route-specific title tags, meta descriptions, and OpenGraph synchronization',
+      'Semantic HTML5 landmark structure (<header>, <main>, <article>, <footer>)',
+      'Trailing-slash canonical URL normalization across all six core routes',
     ],
-    testimonial: {
-      quote:
-        'Our website now does the heavy lifting before we even get on a Zoom call. Prospects arrive already understanding our monthly advisory model and pricing structure.',
-      author: 'Hannah Lindqvist, CPA',
-      role: 'Founder & Managing Partner',
-      company: 'Harbor Tax & Advisory',
-    },
+    technicalSpecs: [
+      { label: 'Project Classification', value: 'Live Production Architecture' },
+      { label: 'Tech Stack', value: 'TypeScript, HTML5, Modern CSS3, Markdown' },
+      { label: 'Design System', value: 'Botanical Obsidian (60-30-10 Token System)' },
+      { label: 'Routes', value: 'Home, Services, Work, About, Insights, Contact' },
+    ],
     wireframeVariant: 'engineering',
   },
 ];

@@ -2,18 +2,478 @@
 
 @theme {
   --font-sans: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-serif: "Source Serif 4", Georgia, serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+}
+
+:root {
+  /* ==========================================================================
+     1. BOTANICAL OBSIDIAN COLOR PALETTE (60 - 30 - 10 Distribution)
+     ========================================================================== */
+  /* 60% Dominant Canvas */
+  --bg-canvas: #061411;
+  --bg-canvas-translucent: rgba(6, 20, 17, 0.86);
+
+  /* 30% Elevated & Interactive Surfaces */
+  --bg-elevated: #0B241F;
+  --bg-elevated-translucent: rgba(11, 36, 31, 0.88);
+  --bg-interactive: #14332D;
+  --bg-interactive-hover: #1A4038;
+
+  /* 10% Primary Accent */
+  --accent-primary: #10B981;
+  --accent-primary-hover: #34D399;
+  --accent-subtle: rgba(16, 185, 129, 0.12);
+  --accent-on-primary: #04120E;
+
+  /* Typography Colors */
+  --text-primary: #F0FDF8;
+  --text-secondary: #8DAAA2;
+  --text-muted: #67857D;
+
+  /* Semantic Status Colors */
+  --status-error-bg: rgba(239, 68, 68, 0.12);
+  --status-error-border: rgba(248, 113, 113, 0.35);
+  --status-error-text: #FCA5A5;
+
+  /* ==========================================================================
+     2. BORDER & DIVIDER SYSTEM
+     ========================================================================== */
+  --border-subtle: rgba(141, 170, 162, 0.14);
+  --border-default: rgba(141, 170, 162, 0.22);
+  --border-interactive: rgba(16, 185, 129, 0.45);
+  --border-accent: #10B981;
+
+  /* ==========================================================================
+     3. TYPOGRAPHY SCALE
+     ========================================================================== */
+  --text-xs: 0.75rem;      /* 12px */
+  --text-sm: 0.875rem;     /* 14px */
+  --text-base: 1rem;       /* 16px */
+  --text-lg: 1.125rem;     /* 18px */
+  --text-xl: 1.25rem;      /* 20px */
+  --text-2xl: 1.5rem;      /* 24px */
+  --text-3xl: 1.875rem;    /* 30px */
+  --text-display-page: clamp(2rem, 3.4vw, 3.25rem);
+  --text-display-hero: clamp(2.25rem, 4vw, 3.75rem);
+
+  --leading-tight: 1.1;
+  --leading-snug: 1.25;
+  --leading-normal: 1.6;
+  --leading-relaxed: 1.7;
+
+  /* ==========================================================================
+     4. SPACING & CONTAINER SCALE
+     ========================================================================== */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-20: 5rem;
+  --space-24: 6rem;
+
+  --container-max: 1200px;
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+
+  /* ==========================================================================
+     5. SHADOW, GLOW & TRANSITION TOKENS
+     ========================================================================== */
+  --shadow-card: 0 12px 32px -12px rgba(2, 10, 8, 0.65);
+  --shadow-card-hover: 0 18px 38px -12px rgba(2, 10, 8, 0.82), 0 0 24px -8px rgba(16, 185, 129, 0.14);
+  --shadow-elevated: 0 20px 44px -16px rgba(2, 10, 8, 0.85);
+  --glow-accent: 0 0 0 1px rgba(16, 185, 129, 0.28), 0 8px 24px -6px rgba(16, 185, 129, 0.24);
+
+  --transition-fast: 160ms cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-base: 220ms cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-reveal: 420ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes ambientGridDrift {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(-18px, -14px, 0);
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes ambientDotsPulse {
+  0%, 100% {
+    opacity: 0.38;
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    opacity: 0.58;
+    transform: translate3d(10px, -10px, 0);
+  }
 }
 
 @layer base {
   html {
     font-family: var(--font-sans);
+    background-color: var(--bg-canvas);
+    color: var(--text-primary);
     scroll-behavior: smooth;
+    color-scheme: dark;
   }
 
   h1, h2, h3, h4 {
     text-wrap: balance;
+    color: var(--text-primary);
+    letter-spacing: -0.02em;
+  }
+
+  p {
+    color: var(--text-secondary);
   }
 }
 
+@layer components {
+  /* ==========================================================================
+     PHASE 04: AMBIENT EMERALD GRID & DESKTOP RADIAL POINTER GLOW
+     ========================================================================== */
+  .ds-ambient-grid {
+    position: absolute;
+    inset: -48px;
+    background-image:
+      linear-gradient(to right, rgba(16, 185, 129, 0.045) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(16, 185, 129, 0.045) 1px, transparent 1px);
+    background-size: 48px 48px;
+    mask-image: radial-gradient(ellipse 85% 75% at 50% 35%, #000 35%, transparent 100%);
+    will-change: transform;
+    animation: ambientGridDrift 28s ease-in-out infinite;
+  }
+
+  .ds-ambient-dots {
+    position: absolute;
+    inset: -32px;
+    background-image: radial-gradient(rgba(16, 185, 129, 0.14) 1px, transparent 1px);
+    background-size: 24px 24px;
+    mask-image: radial-gradient(ellipse 70% 65% at 50% 25%, #000 20%, transparent 90%);
+    will-change: transform, opacity;
+    animation: ambientDotsPulse 18s ease-in-out infinite;
+  }
+
+  .ds-ambient-vignette {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 0%, rgba(16, 185, 129, 0.065), transparent 60%);
+  }
+
+  .ds-cursor-glow {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 560px;
+    height: 560px;
+    margin-left: -280px;
+    margin-top: -280px;
+    border-radius: 9999px;
+    background: radial-gradient(
+      circle,
+      rgba(16, 185, 129, 0.095) 0%,
+      rgba(16, 185, 129, 0.035) 38%,
+      transparent 70%
+    );
+    opacity: 0;
+    pointer-events: none;
+    will-change: transform, opacity;
+    transition: opacity 350ms ease;
+  }
+
+  @media (hover: none), (pointer: coarse) {
+    .ds-cursor-glow {
+      display: none !important;
+    }
+  }
+
+  /* ==========================================================================
+     CONTAINER & SECTION SPACING SYSTEM
+     ========================================================================== */
+  .ds-container {
+    width: 100%;
+    max-width: var(--container-max);
+    margin-inline: auto;
+    padding-inline: 1.25rem;
+  }
+
+  @media (min-width: 640px) {
+    .ds-container {
+      padding-inline: 2rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .ds-container {
+      padding-inline: 2.5rem;
+    }
+  }
+
+  .ds-section-default {
+    padding-block: var(--space-16);
+  }
+
+  @media (min-width: 640px) {
+    .ds-section-default {
+      padding-block: var(--space-20);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .ds-section-default {
+      padding-block: var(--space-24);
+    }
+  }
+
+  .ds-section-compact {
+    padding-block: var(--space-12);
+  }
+
+  @media (min-width: 640px) {
+    .ds-section-compact {
+      padding-block: var(--space-16);
+    }
+  }
+
+  /* ==========================================================================
+     CARD SYSTEM WITH SUBTLE HOVER ELEVATION & BORDER SHEEN
+     ========================================================================== */
+  .ds-card,
+  .ds-card-interactive,
+  .ds-card-active {
+    position: relative;
+    overflow: hidden;
+    background-color: var(--bg-elevated-translucent);
+    backdrop-filter: blur(8px);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-card);
+    transition:
+      transform var(--transition-base),
+      border-color var(--transition-base),
+      background-color var(--transition-base),
+      box-shadow var(--transition-base),
+      opacity var(--transition-reveal);
+  }
+
+  .ds-card::before,
+  .ds-card-interactive::before,
+  .ds-card-active::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background: radial-gradient(
+      420px circle at var(--mouse-x, 50%) var(--mouse-y, 0%),
+      rgba(16, 185, 129, 0.085),
+      transparent 65%
+    );
+    opacity: 0;
+    transition: opacity var(--transition-base);
+  }
+
+  .ds-card:hover {
+    border-color: var(--border-default);
+    box-shadow: var(--shadow-card-hover);
+    transform: translate3d(0, -2px, 0);
+  }
+
+  .ds-card:hover::before,
+  .ds-card-interactive:hover::before,
+  .ds-card-active::before {
+    opacity: 1;
+  }
+
+  .ds-card-interactive:hover {
+    background-color: var(--bg-interactive);
+    border-color: var(--border-interactive);
+    box-shadow: var(--shadow-card-hover);
+    transform: translate3d(0, -3px, 0);
+  }
+
+  .ds-card-active {
+    background-color: var(--bg-interactive);
+    border-color: var(--border-accent);
+    box-shadow: var(--glow-accent);
+  }
+
+  .ds-surface-inset {
+    background-color: var(--bg-canvas);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    transition: border-color var(--transition-fast), background-color var(--transition-fast);
+  }
+
+  .ds-surface-inset:hover {
+    border-color: var(--border-default);
+  }
+
+  .ds-surface-interactive {
+    background-color: var(--bg-interactive);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  }
+
+  /* ==========================================================================
+     SCROLL REVEAL & SECTION TRANSITIONS (Zero-Hidden-Content Guarantee)
+     ========================================================================== */
+  .ds-reveal-pending {
+    opacity: 0.92;
+    transform: translate3d(0, 12px, 0);
+  }
+
+  .ds-reveal-visible {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+
+  /* ==========================================================================
+     BUTTON SYSTEM WITH COMPOSITOR MICRO-INTERACTIONS
+     ========================================================================== */
+  .ds-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    border-radius: var(--radius-md);
+    white-space: nowrap;
+    flex-shrink: 0;
+    cursor: pointer;
+    transition:
+      transform var(--transition-fast),
+      background-color var(--transition-fast),
+      border-color var(--transition-fast),
+      color var(--transition-fast),
+      box-shadow var(--transition-fast);
+  }
+
+  .ds-btn:focus-visible {
+    outline: 2px solid var(--accent-primary);
+    outline-offset: 2px;
+  }
+
+  .ds-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .ds-btn-primary {
+    background-color: var(--accent-primary);
+    color: var(--accent-on-primary);
+    border: 1px solid transparent;
+  }
+
+  .ds-btn-primary:hover:not(:disabled) {
+    background-color: var(--accent-primary-hover);
+    box-shadow: var(--glow-accent);
+    transform: translate3d(0, -1px, 0);
+  }
+
+  .ds-btn-primary:active:not(:disabled) {
+    transform: translate3d(0, 0, 0);
+  }
+
+  .ds-btn-secondary {
+    background-color: var(--bg-interactive);
+    color: var(--text-primary);
+    border: 1px solid var(--border-default);
+  }
+
+  .ds-btn-secondary:hover:not(:disabled) {
+    background-color: var(--bg-interactive-hover);
+    border-color: var(--border-interactive);
+    transform: translate3d(0, -1px, 0);
+  }
+
+  .ds-btn-secondary:active:not(:disabled) {
+    transform: translate3d(0, 0, 0);
+  }
+
+  .ds-btn-quiet {
+    background-color: transparent;
+    color: var(--text-primary);
+    padding-inline: 0;
+    padding-block: 0.25rem;
+  }
+
+  .ds-btn-quiet:hover:not(:disabled) {
+    color: var(--accent-primary);
+    transform: translate3d(2px, 0, 0);
+  }
+
+  /* ==========================================================================
+     INPUT SYSTEM
+     ========================================================================== */
+  .ds-input {
+    width: 100%;
+    padding: 0.65rem 0.875rem;
+    font-size: var(--text-sm);
+    color: var(--text-primary);
+    background-color: var(--bg-canvas);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    transition:
+      border-color var(--transition-fast),
+      background-color var(--transition-fast),
+      box-shadow var(--transition-fast);
+  }
+
+  .ds-input::placeholder {
+    color: var(--text-muted);
+  }
+
+  .ds-input:hover {
+    border-color: var(--text-secondary);
+  }
+
+  .ds-input:focus {
+    outline: none;
+    background-color: var(--bg-elevated);
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 1px var(--accent-primary);
+  }
+}
+
+/* ==========================================================================
+   PREFERS-REDUCED-MOTION ACCESSIBILITY COMPLIANCE
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .ds-ambient-grid,
+  .ds-ambient-dots {
+    animation: none !important;
+    transform: none !important;
+  }
+
+  .ds-cursor-glow {
+    display: none !important;
+  }
+
+  .ds-card,
+  .ds-card-interactive,
+  .ds-card-active,
+  .ds-btn,
+  .ds-reveal-pending,
+  .ds-reveal-visible {
+    transition: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+  }
+}

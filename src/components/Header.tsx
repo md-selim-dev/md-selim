@@ -14,7 +14,7 @@ export const Header: React.FC<HeaderProps> = ({ currentRoute }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-40 bg-[#FAF9F6]/95 backdrop-blur-sm border-b border-stone-200/90">
+    <header className="sticky top-0 z-40 bg-[var(--bg-canvas-translucent)] backdrop-blur-md border-b border-[var(--border-subtle)]">
       <div
         className={`${themeTokens.layout.container} flex items-center justify-between gap-8 h-16`}
       >
@@ -26,7 +26,7 @@ export const Header: React.FC<HeaderProps> = ({ currentRoute }) => {
             setMobileMenuOpen(false);
             navigateTo('/');
           }}
-          className="text-lg font-bold tracking-tight text-slate-900 whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-700"
+          className="text-lg font-bold tracking-tight text-[var(--text-primary)] whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent-primary)]"
         >
           {siteConfig.brand.logoUrl ? (
             <img
@@ -64,7 +64,7 @@ export const Header: React.FC<HeaderProps> = ({ currentRoute }) => {
             aria-label={mobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
             aria-expanded={mobileMenuOpen}
             onClick={() => setMobileMenuOpen((prev) => !prev)}
-            className="md:hidden inline-flex items-center justify-center w-10 h-10 rounded-lg text-slate-700 hover:text-slate-900 hover:bg-stone-200/60 transition-colors cursor-pointer"
+            className="md:hidden inline-flex items-center justify-center w-10 h-10 rounded-lg text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-interactive)] transition-colors cursor-pointer"
           >
             {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
@@ -73,14 +73,14 @@ export const Header: React.FC<HeaderProps> = ({ currentRoute }) => {
 
       {/* Responsive Mobile Navigation Drawer */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-t border-stone-200 bg-[#FAF9F6] px-5 py-4 space-y-4">
+        <div className="md:hidden border-t border-[var(--border-subtle)] bg-[var(--bg-canvas)] px-5 py-4 space-y-4">
           <Navigation
             items={[{ label: 'Home', path: '/' }, ...siteConfig.navigation.main]}
             currentRoute={currentRoute}
             orientation="vertical"
             onNavigate={() => setMobileMenuOpen(false)}
           />
-          <div className="pt-2 border-t border-stone-200/80">
+          <div className="pt-2 border-t border-[var(--border-subtle)]">
             <Button
               to={siteConfig.navigation.primaryCta.path}
               variant="primary"
