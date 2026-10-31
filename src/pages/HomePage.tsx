@@ -2,6 +2,7 @@ import React from 'react';
 import { ArrowRight, Check } from 'lucide-react';
 import { ArticleCard } from '../components/ArticleCard';
 import { Button } from '../components/Button';
+import { ExplorationHub } from '../components/exploration/ExplorationHub';
 import { ProjectCard } from '../components/ProjectCard';
 import { SectionContainer } from '../components/SectionContainer';
 import { VisualWireframeCanvas } from '../components/VisualWireframeCanvas';
@@ -251,82 +252,9 @@ export const HomePage: React.FC = () => {
         </div>
       </SectionContainer>
 
-      {/* 6. EXPLORATION SECTION PLACEHOLDER */}
-      <SectionContainer surface="canvas" spacing="default" borderBottom>
-        <div className="ds-surface-interactive p-6 sm:p-9 lg:p-10 space-y-8">
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 border-b border-[var(--border-subtle)] pb-6">
-            <div className="space-y-2 max-w-2xl">
-              <p className={themeTokens.typography.kicker}>
-                05 · Interactive Exploration Slot (Phase Reserve)
-              </p>
-              <h2 className="text-xl sm:text-2xl font-bold text-[var(--text-primary)]">
-                Explore website architecture, SEO readiness, and service scope.
-              </h2>
-              <p className="text-sm text-[var(--text-secondary)] leading-relaxed">
-                This modular container is reserved for interactive diagnostic and exploration tools in future phases. Use the pathways below to explore the core areas of the platform right now.
-              </p>
-            </div>
-            <span className="font-mono text-xs text-[var(--accent-primary)] self-start lg:self-center">
-              Architecture Slot · Ready
-            </span>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-            <div className="ds-surface-inset p-5 flex flex-col justify-between space-y-4">
-              <div className="space-y-2">
-                <p className="font-mono text-xs text-[var(--accent-primary)]">
-                  Pathway 01
-                </p>
-                <h3 className="text-base font-bold text-[var(--text-primary)]">
-                  Compare Service Deliverables & Exclusions
-                </h3>
-                <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
-                  Review what is included in Webflow builds, landing pages, SEO setup, and maintenance.
-                </p>
-              </div>
-              <Button to="/services/" variant="quiet" size="sm">
-                Go to Services
-                <ArrowRight className="w-3.5 h-3.5" />
-              </Button>
-            </div>
-
-            <div className="ds-surface-inset p-5 flex flex-col justify-between space-y-4">
-              <div className="space-y-2">
-                <p className="font-mono text-xs text-[var(--accent-primary)]">
-                  Pathway 02
-                </p>
-                <h3 className="text-base font-bold text-[var(--text-primary)]">
-                  Inspect Demo & Production Architectures
-                </h3>
-                <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
-                  See how service pages, mobile layouts, and technical SEO schemas are structured.
-                </p>
-              </div>
-              <Button to="/work/" variant="quiet" size="sm">
-                Go to Work
-                <ArrowRight className="w-3.5 h-3.5" />
-              </Button>
-            </div>
-
-            <div className="ds-surface-inset p-5 flex flex-col justify-between space-y-4">
-              <div className="space-y-2">
-                <p className="font-mono text-xs text-[var(--accent-primary)]">
-                  Pathway 03
-                </p>
-                <h3 className="text-base font-bold text-[var(--text-primary)]">
-                  Read Practical Guides & Field Notes
-                </h3>
-                <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
-                  Explore articles on website positioning, on-page SEO hierarchy, and Webflow maintainability.
-                </p>
-              </div>
-              <Button to="/insights/" variant="quiet" size="sm">
-                Go to Insights
-                <ArrowRight className="w-3.5 h-3.5" />
-              </Button>
-            </div>
-          </div>
-        </div>
+      {/* 6. PHASE 05: INTERACTIVE EXPLORATION EXPERIENCES */}
+      <SectionContainer id="exploration-hub" surface="canvas" spacing="default" borderBottom>
+        <ExplorationHub />
       </SectionContainer>
 
       {/* 7. LATEST INSIGHTS SECTION */}

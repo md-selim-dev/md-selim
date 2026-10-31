@@ -1,5 +1,6 @@
 import React, { useRef } from 'react';
 import { AmbientBackground } from '../components/AmbientBackground';
+import { AssistantWidget } from '../components/chatbot/AssistantWidget';
 import { Footer } from '../components/Footer';
 import { Header } from '../components/Header';
 import { RoutePath } from '../config/siteConfig';
@@ -37,6 +38,9 @@ export const BaseLayout: React.FC<BaseLayoutProps> = ({ currentRoute, children }
       <div className="relative z-10">
         <Footer />
       </div>
+
+      {/* Phase 06: Independent AI Assistant Widget */}
+      <AssistantWidget />
     </div>
   );
 };
