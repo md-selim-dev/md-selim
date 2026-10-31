@@ -81,7 +81,7 @@ export const WebsiteClarityChecker: React.FC = () => {
         <button
           type="button"
           onClick={() => setAnswers(INITIAL_ANSWERS)}
-          className="inline-flex items-center gap-1.5 font-mono text-xs text-[var(--text-secondary)] hover:text-[var(--accent-primary)] transition-colors shrink-0 cursor-pointer"
+          className="inline-flex items-center gap-1.5 min-h-[40px] py-1.5 font-mono text-xs text-[var(--text-secondary)] hover:text-[var(--accent-primary)] transition-colors shrink-0 cursor-pointer self-start sm:self-center"
         >
           <RotateCcw className="w-3.5 h-3.5" />
           Reset checklist
@@ -96,7 +96,7 @@ export const WebsiteClarityChecker: React.FC = () => {
             return (
               <div
                 key={criterion.id}
-                className="ds-surface-inset p-5 space-y-4"
+                className="ds-surface-inset p-4 sm:p-5 space-y-4"
               >
                 <div className="space-y-1.5">
                   <p className="font-mono text-xs text-[var(--accent-primary)]">
@@ -128,7 +128,7 @@ export const WebsiteClarityChecker: React.FC = () => {
                         role="radio"
                         aria-checked={active}
                         onClick={() => handleSetAnswer(criterion.id, option.value)}
-                        className={`px-3 py-2 text-xs font-mono rounded-md border text-left transition-colors cursor-pointer ${
+                        className={`min-h-[44px] flex items-center px-3 py-2 text-xs font-mono rounded-md border text-left transition-colors cursor-pointer ${
                           active
                             ? 'bg-[var(--bg-interactive)] border-[var(--border-accent)] text-[var(--text-primary)] font-semibold'
                             : 'bg-[var(--bg-elevated)] border-[var(--border-subtle)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
@@ -146,8 +146,8 @@ export const WebsiteClarityChecker: React.FC = () => {
 
         {/* Right Column: Live Score & Actionable Recommendations */}
         <div className="lg:col-span-5 space-y-6 lg:sticky lg:top-24">
-          <div className="ds-card p-6 sm:p-7 space-y-6">
-            <div className="flex items-baseline justify-between gap-4 border-b border-[var(--border-subtle)] pb-5">
+          <div className="ds-card p-5 sm:p-7 space-y-6">
+            <div className="flex flex-wrap items-baseline justify-between gap-4 border-b border-[var(--border-subtle)] pb-5">
               <div>
                 <p className="font-mono text-xs text-[var(--accent-primary)]">
                   Checklist Score
@@ -156,8 +156,8 @@ export const WebsiteClarityChecker: React.FC = () => {
                   {scoreBand.label}
                 </h3>
               </div>
-              <div className="text-right">
-                <p className="text-3xl font-mono font-bold tabular-nums text-[var(--accent-primary)]">
+              <div className="text-left sm:text-right">
+                <p className="text-2xl sm:text-3xl font-mono font-bold tabular-nums text-[var(--accent-primary)]">
                   {percentage}%
                 </p>
                 <p className="font-mono text-[11px] text-[var(--text-secondary)] tabular-nums">

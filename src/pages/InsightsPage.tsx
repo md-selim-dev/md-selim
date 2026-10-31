@@ -53,7 +53,7 @@ export const InsightsPage: React.FC = () => {
           <div
             role="tablist"
             aria-label="Filter articles by topic"
-            className="inline-flex flex-wrap items-center gap-1 p-1 bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded-lg self-start"
+            className="w-full sm:w-auto inline-flex flex-wrap items-center gap-1.5 p-1.5 bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded-lg self-start"
           >
             {TOPICS.map((topic) => {
               const active = selectedTopic === topic;
@@ -64,7 +64,7 @@ export const InsightsPage: React.FC = () => {
                   role="tab"
                   aria-selected={active}
                   onClick={() => setSelectedTopic(topic)}
-                  className={`px-3.5 py-1.5 text-xs font-mono font-medium rounded-md transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
+                  className={`min-h-[40px] px-3.5 py-2 text-xs font-mono font-medium rounded-md transition-colors sm:whitespace-nowrap cursor-pointer ${
                     active
                       ? 'bg-[var(--bg-interactive)] text-[var(--accent-primary)] border border-[var(--border-interactive)] font-semibold'
                       : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'

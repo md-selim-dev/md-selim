@@ -33,10 +33,20 @@ export const Button: React.FC<ButtonProps> = ({
     quiet: 'ds-btn ds-btn-quiet underline-offset-4 hover:underline',
   };
 
+  // Ensure >=44px touch targets on mobile while keeping compact proportions on desktop
   const sizeStyles = {
-    sm: variant === 'quiet' ? 'text-xs' : 'px-4 py-2 text-xs min-h-[38px]',
-    md: variant === 'quiet' ? 'text-sm' : 'px-5 py-2.5 text-sm min-h-[42px]',
-    lg: variant === 'quiet' ? 'text-base' : 'px-6 py-3 text-sm sm:text-base min-h-[48px]',
+    sm:
+      variant === 'quiet'
+        ? 'text-xs min-h-[40px]'
+        : 'px-4 py-2 text-xs min-h-[44px] sm:min-h-[38px] whitespace-normal sm:whitespace-nowrap',
+    md:
+      variant === 'quiet'
+        ? 'text-sm min-h-[42px]'
+        : 'px-5 py-2.5 text-sm min-h-[44px] whitespace-normal sm:whitespace-nowrap',
+    lg:
+      variant === 'quiet'
+        ? 'text-base min-h-[44px]'
+        : 'px-6 py-3 text-sm sm:text-base min-h-[48px] whitespace-normal sm:whitespace-nowrap',
   };
 
   const combinedClassName = `${variantStyles[variant]} ${sizeStyles[size]} ${className}`.trim();

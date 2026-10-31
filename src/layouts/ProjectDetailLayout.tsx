@@ -26,7 +26,7 @@ export const ProjectDetailLayout: React.FC<ProjectDetailLayoutProps> = ({
           <button
             type="button"
             onClick={onBack}
-            className="inline-flex items-center gap-2 font-mono text-xs font-medium text-[var(--accent-primary)] hover:underline cursor-pointer"
+            className="inline-flex items-center gap-2 min-h-[44px] py-2 font-mono text-xs font-medium text-[var(--accent-primary)] hover:underline cursor-pointer"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             Back to all projects

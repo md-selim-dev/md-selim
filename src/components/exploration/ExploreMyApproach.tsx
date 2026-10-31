@@ -17,7 +17,7 @@ export const ExploreMyApproach: React.FC = () => {
       <div
         role="tablist"
         aria-label="Project approach steps"
-        className="grid grid-cols-1 sm:grid-cols-5 gap-2.5"
+        className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2.5"
       >
         {approachSteps.map((step, index) => {
           const isCurrent = index === activeIndex;
@@ -28,7 +28,7 @@ export const ExploreMyApproach: React.FC = () => {
               role="tab"
               aria-selected={isCurrent}
               onClick={() => setActiveIndex(index)}
-              className={`p-3.5 rounded-lg border text-left transition-colors cursor-pointer ${
+              className={`min-h-[44px] p-3.5 rounded-lg border text-left transition-colors cursor-pointer ${
                 isCurrent
                   ? 'bg-[var(--bg-interactive)] border-[var(--border-accent)]'
                   : 'bg-[var(--bg-canvas)] border-[var(--border-subtle)] hover:border-[var(--border-default)]'
@@ -46,14 +46,14 @@ export const ExploreMyApproach: React.FC = () => {
       </div>
 
       {/* Selected Step Detail View */}
-      <div className="ds-card p-6 sm:p-8 lg:p-9 space-y-8">
+      <div className="ds-card p-5 sm:p-8 lg:p-9 space-y-8">
         <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-6 border-b border-[var(--border-subtle)] pb-6">
           <div className="space-y-2 max-w-2xl">
             <p className="font-mono text-xs font-semibold text-[var(--accent-primary)]">
               Step {currentStep.stepNumber} of 0{approachSteps.length} ·{' '}
               {currentStep.phaseFocus}
             </p>
-            <h3 className="text-2xl font-bold text-[var(--text-primary)]">
+            <h3 className="text-xl sm:text-2xl font-bold text-[var(--text-primary)]">
               {currentStep.title}
             </h3>
             <p className="text-sm sm:text-base text-[var(--text-secondary)] leading-relaxed">

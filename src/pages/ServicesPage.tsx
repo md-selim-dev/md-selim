@@ -53,7 +53,7 @@ export const ServicesPage: React.FC = () => {
             <div
               role="tablist"
               aria-label="Select service specification"
-              className="inline-flex flex-wrap items-center gap-1 p-1 bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded-lg self-start"
+              className="w-full sm:w-auto inline-flex flex-wrap items-center gap-1.5 p-1.5 bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded-lg self-start"
             >
               {servicesData.services.map((service) => {
                 const isSelected = service.id === selectedServiceId;
@@ -64,7 +64,7 @@ export const ServicesPage: React.FC = () => {
                     role="tab"
                     aria-selected={isSelected}
                     onClick={() => setSelectedServiceId(service.id)}
-                    className={`px-3 py-1.5 text-xs font-mono font-medium rounded-md transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
+                    className={`min-h-[40px] px-3 py-2 text-xs font-mono font-medium rounded-md transition-colors text-left sm:whitespace-nowrap cursor-pointer ${
                       isSelected
                         ? 'bg-[var(--bg-interactive)] text-[var(--accent-primary)] border border-[var(--border-interactive)] font-semibold'
                         : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
@@ -78,12 +78,12 @@ export const ServicesPage: React.FC = () => {
           </div>
 
           {/* Active Service Inspector Panel (Deliverables + Exclusions Side-by-Side) */}
-          <div className="ds-card p-6 sm:p-9 space-y-8">
+          <div className="ds-card p-5 sm:p-9 space-y-8">
             <div className="space-y-3 max-w-3xl">
               <p className="font-mono text-xs font-semibold text-[var(--accent-primary)]">
                 {activeService.index} · {activeService.categoryLabel}
               </p>
-              <h3 className="text-2xl sm:text-3xl font-bold text-[var(--text-primary)]">
+              <h3 className="text-xl sm:text-3xl font-bold text-[var(--text-primary)]">
                 {activeService.title}
               </h3>
               <p className="text-sm sm:text-base text-[var(--text-secondary)] leading-relaxed">
@@ -97,7 +97,7 @@ export const ServicesPage: React.FC = () => {
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pt-2">
               {/* Included Deliverables */}
-              <div className="ds-surface-inset p-5 sm:p-6 space-y-4">
+              <div className="ds-surface-inset p-4 sm:p-6 space-y-4">
                 <h4 className="font-mono text-xs font-semibold text-[var(--accent-primary)]">
                   What Is Included (Deliverables)
                 </h4>
@@ -115,7 +115,7 @@ export const ServicesPage: React.FC = () => {
               </div>
 
               {/* Explicit Exclusions */}
-              <div className="ds-surface-inset p-5 sm:p-6 flex flex-col justify-between space-y-6">
+              <div className="ds-surface-inset p-4 sm:p-6 flex flex-col justify-between space-y-6">
                 <div className="space-y-4">
                   <h4 className="font-mono text-xs font-semibold text-[var(--text-secondary)]">
                     What Is Not Included (Exclusions)
@@ -133,7 +133,7 @@ export const ServicesPage: React.FC = () => {
                   </ul>
                 </div>
 
-                <div className="pt-4 border-t border-[var(--border-subtle)] flex items-center justify-between gap-4">
+                <div className="pt-4 border-t border-[var(--border-subtle)] flex flex-wrap items-center justify-between gap-4">
                   <span className="font-mono text-xs text-[var(--text-secondary)]">
                     Need this service?
                   </span>
@@ -153,7 +153,7 @@ export const ServicesPage: React.FC = () => {
                 <div
                   key={service.id}
                   onClick={() => setSelectedServiceId(service.id)}
-                  className={`p-6 cursor-pointer flex flex-col justify-between space-y-5 ${
+                  className={`p-5 sm:p-6 cursor-pointer flex flex-col justify-between space-y-5 ${
                     isSelected ? 'ds-card-active' : 'ds-card-interactive'
                   }`}
                 >
@@ -199,7 +199,7 @@ export const ServicesPage: React.FC = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {servicesData.globalExclusions.map((item) => (
-              <div key={item.title} className="ds-card p-6 space-y-2">
+              <div key={item.title} className="ds-card p-5 sm:p-6 space-y-2">
                 <h3 className="text-base font-bold text-[var(--text-primary)]">
                   Not Offered: {item.title}
                 </h3>
@@ -226,7 +226,7 @@ export const ServicesPage: React.FC = () => {
             {servicesData.processPhases.map((phase) => (
               <div
                 key={phase.step}
-                className="ds-card p-6 flex flex-col justify-between space-y-6"
+                className="ds-card p-5 sm:p-6 flex flex-col justify-between space-y-6"
               >
                 <div className="space-y-3">
                   <p className="font-mono text-xs font-semibold text-[var(--accent-primary)]">
@@ -282,14 +282,14 @@ export const ServicesPage: React.FC = () => {
             {servicesData.faqs.map((faq, index) => {
               const isOpen = openFaqIndex === index;
               return (
-                <div key={faq.question} className="py-5">
+                <div key={faq.question} className="py-4 sm:py-5">
                   <button
                     type="button"
                     aria-expanded={isOpen}
                     onClick={() => setOpenFaqIndex(isOpen ? -1 : index)}
-                    className="w-full flex items-center justify-between gap-4 text-left cursor-pointer group"
+                    className="w-full min-h-[44px] py-1 flex items-center justify-between gap-4 text-left cursor-pointer group"
                   >
-                    <span className="text-base font-semibold text-[var(--text-primary)] group-hover:text-[var(--accent-primary)] transition-colors">
+                    <span className="text-sm sm:text-base font-semibold text-[var(--text-primary)] group-hover:text-[var(--accent-primary)] transition-colors">
                       {faq.question}
                     </span>
                     <span className="text-xs font-mono text-[var(--accent-primary)] shrink-0">
@@ -297,7 +297,7 @@ export const ServicesPage: React.FC = () => {
                     </span>
                   </button>
                   {isOpen && (
-                    <p className="mt-3 text-sm text-[var(--text-secondary)] leading-relaxed pr-6">
+                    <p className="mt-2.5 text-sm text-[var(--text-secondary)] leading-relaxed sm:pr-6">
                       {faq.answer}
                     </p>
                   )}

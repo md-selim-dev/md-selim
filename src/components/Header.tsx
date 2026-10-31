@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Menu, X } from 'lucide-react';
 import { RoutePath, siteConfig } from '../config/siteConfig';
 import { navigateTo } from '../scripts/router';
@@ -13,10 +13,38 @@ export interface HeaderProps {
 export const Header: React.FC<HeaderProps> = ({ currentRoute }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  // Close mobile drawer when route changes, Escape key is pressed, or viewport expands to tablet/desktop (>=768px)
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [currentRoute]);
+
+  useEffect(() => {
+    if (!mobileMenuOpen) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setMobileMenuOpen(false);
+      }
+    };
+
+    const handleResize = () => {
+      if (window.innerWidth >= 768) {
+        setMobileMenuOpen(false);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('resize', handleResize, { passive: true });
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [mobileMenuOpen]);
+
   return (
     <header className="sticky top-0 z-40 bg-[var(--bg-canvas-translucent)] backdrop-blur-md border-b border-[var(--border-subtle)]">
       <div
-        className={`${themeTokens.layout.container} flex items-center justify-between gap-8 h-16`}
+        className={`${themeTokens.layout.container} flex items-center justify-between gap-4 lg:gap-8 h-16`}
       >
         {/* Zone 1: Single-line Brand Wordmark (or uploaded brand logo when configured) */}
         <a
@@ -26,7 +54,7 @@ export const Header: React.FC<HeaderProps> = ({ currentRoute }) => {
             setMobileMenuOpen(false);
             navigateTo('/');
           }}
-          className="text-lg font-bold tracking-tight text-[var(--text-primary)] whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent-primary)]"
+          className="inline-flex items-center min-h-[44px] text-base sm:text-lg font-bold tracking-tight text-[var(--text-primary)] whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent-primary)]"
         >
           {siteConfig.brand.logoUrl ? (
             <img
@@ -47,8 +75,8 @@ export const Header: React.FC<HeaderProps> = ({ currentRoute }) => {
           orientation="horizontal"
         />
 
-        {/* Zone 3: 1 Primary Action + Mobile Menu Trigger */}
-        <div className="flex items-center gap-3 shrink-0">
+        {/* Zone 3: 1 Primary Action + Mobile Menu Trigger (44x44px touch target) */}
+        <div className="flex items-center gap-2.5 sm:gap-3 shrink-0">
           <div className="hidden sm:block">
             <Button
               to={siteConfig.navigation.primaryCta.path}
@@ -64,7 +92,7 @@ export const Header: React.FC<HeaderProps> = ({ currentRoute }) => {
             aria-label={mobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
             aria-expanded={mobileMenuOpen}
             onClick={() => setMobileMenuOpen((prev) => !prev)}
-            className="md:hidden inline-flex items-center justify-center w-10 h-10 rounded-lg text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-interactive)] transition-colors cursor-pointer"
+            className="md:hidden inline-flex items-center justify-center w-11 h-11 rounded-lg text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-interactive)] transition-colors cursor-pointer"
           >
             {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
@@ -73,7 +101,7 @@ export const Header: React.FC<HeaderProps> = ({ currentRoute }) => {
 
       {/* Responsive Mobile Navigation Drawer */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-t border-[var(--border-subtle)] bg-[var(--bg-canvas)] px-5 py-4 space-y-4">
+        <div className="md:hidden border-t border-[var(--border-subtle)] bg-[var(--bg-canvas)] px-4 sm:px-5 py-4 space-y-4 max-h-[calc(100dvh-4rem)] overflow-y-auto">
           <Navigation
             items={[{ label: 'Home', path: '/' }, ...siteConfig.navigation.main]}
             currentRoute={currentRoute}
@@ -96,3 +124,4 @@ export const Header: React.FC<HeaderProps> = ({ currentRoute }) => {
     </header>
   );
 };
+

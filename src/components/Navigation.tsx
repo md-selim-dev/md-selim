@@ -30,7 +30,7 @@ export const Navigation: React.FC<NavigationProps> = ({
                 navigateTo(item.path);
                 if (onNavigate) onNavigate();
               }}
-              className={`px-3.5 py-2.5 text-sm font-medium rounded-md transition-colors whitespace-nowrap shrink-0 ${
+              className={`min-h-[44px] flex items-center px-3.5 py-2.5 text-sm font-medium rounded-md transition-colors whitespace-nowrap shrink-0 ${
                 isActive
                   ? 'text-[var(--accent-primary)] bg-[var(--bg-interactive)] font-semibold'
                   : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)]'
@@ -45,7 +45,7 @@ export const Navigation: React.FC<NavigationProps> = ({
   }
 
   return (
-    <nav aria-label="Primary Navigation" className="hidden md:flex items-center gap-7">
+    <nav aria-label="Primary Navigation" className="hidden md:flex items-center gap-5 lg:gap-7">
       {items.map((item) => {
         const isActive = currentRoute === item.path;
         return (
@@ -58,7 +58,7 @@ export const Navigation: React.FC<NavigationProps> = ({
               navigateTo(item.path);
               if (onNavigate) onNavigate();
             }}
-            className={`relative py-1 text-sm font-medium transition-colors whitespace-nowrap shrink-0 ${
+            className={`relative py-2 text-sm font-medium transition-colors whitespace-nowrap shrink-0 ${
               isActive
                 ? 'text-[var(--text-primary)] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-[var(--accent-primary)]'
                 : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'

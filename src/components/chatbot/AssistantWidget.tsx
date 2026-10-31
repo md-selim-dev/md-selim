@@ -240,17 +240,17 @@ export const AssistantWidget: React.FC = () => {
   };
 
   return (
-    <div className="fixed bottom-5 right-5 z-40 flex flex-col items-end">
+    <div className="fixed bottom-3 right-3 sm:bottom-5 sm:right-5 z-40 flex flex-col items-end max-w-[calc(100vw-1.5rem)]">
       {/* Expandable Assistant Panel */}
       {isOpen && (
         <aside
           aria-label="MD Selim AI Assistant"
-          className="mb-3 w-[calc(100vw-2.5rem)] sm:w-[410px] max-h-[min(640px,calc(100vh-6.5rem))] ds-card border-[var(--border-default)] flex flex-col overflow-hidden shadow-2xl"
+          className="mb-2.5 sm:mb-3 w-[calc(100vw-1.5rem)] sm:w-[410px] max-h-[min(640px,calc(100dvh-5.5rem))] ds-card border-[var(--border-default)] flex flex-col overflow-hidden shadow-2xl"
         >
           {/* 1. Assistant Header + Explicit AI Disclosure */}
-          <div className="px-4 py-3.5 bg-[var(--bg-elevated)] border-b border-[var(--border-subtle)] flex items-start justify-between gap-3">
-            <div className="space-y-0.5">
-              <div className="flex items-center gap-2">
+          <div className="px-3.5 sm:px-4 py-3 bg-[var(--bg-elevated)] border-b border-[var(--border-subtle)] flex items-start justify-between gap-2.5">
+            <div className="space-y-0.5 min-w-0">
+              <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
                 <span className="text-sm font-bold text-[var(--text-primary)]">
                   MD Selim · AI Assistant
                 </span>
@@ -273,7 +273,7 @@ export const AssistantWidget: React.FC = () => {
                   setErrorBanner(null);
                   setShowBriefForm(false);
                 }}
-                className="p-1.5 rounded-md text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-interactive)] transition-colors cursor-pointer"
+                className="inline-flex items-center justify-center w-9 h-9 sm:w-8 sm:h-8 rounded-md text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-interactive)] transition-colors cursor-pointer"
               >
                 <RotateCcw className="w-4 h-4" />
               </button>
@@ -281,7 +281,7 @@ export const AssistantWidget: React.FC = () => {
                 type="button"
                 aria-label="Close AI assistant"
                 onClick={() => setIsOpen(false)}
-                className="p-1.5 rounded-md text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-interactive)] transition-colors cursor-pointer"
+                className="inline-flex items-center justify-center w-9 h-9 sm:w-8 sm:h-8 rounded-md text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-interactive)] transition-colors cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -289,13 +289,13 @@ export const AssistantWidget: React.FC = () => {
           </div>
 
           {/* 2. Privacy & Usage Controls Bar */}
-          <div className="px-4 py-2 bg-[var(--bg-canvas)] border-b border-[var(--border-subtle)] flex items-center justify-between gap-2 text-[11px] font-mono text-[var(--text-secondary)]">
+          <div className="px-3.5 sm:px-4 py-2 bg-[var(--bg-canvas)] border-b border-[var(--border-subtle)] flex flex-wrap items-center justify-between gap-x-3 gap-y-1.5 text-[11px] font-mono text-[var(--text-secondary)]">
             <button
               type="button"
               onClick={() => setShowPrivacyInfo((prev) => !prev)}
-              className="inline-flex items-center gap-1 hover:text-[var(--accent-primary)] transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1 py-1 hover:text-[var(--accent-primary)] transition-colors cursor-pointer"
             >
-              <ShieldCheck className="w-3.5 h-3.5 text-[var(--accent-primary)]" />
+              <ShieldCheck className="w-3.5 h-3.5 text-[var(--accent-primary)] shrink-0" />
               <span>{showPrivacyInfo ? 'Hide privacy notice' : 'Privacy & AI disclosure'}</span>
             </button>
 
@@ -303,7 +303,7 @@ export const AssistantWidget: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setShowBriefForm((prev) => !prev)}
-                className="text-[var(--accent-primary)] hover:underline cursor-pointer"
+                className="py-1 text-[var(--accent-primary)] hover:underline cursor-pointer"
               >
                 {showBriefForm ? 'Back to chat' : 'Share project brief'}
               </button>
@@ -314,7 +314,7 @@ export const AssistantWidget: React.FC = () => {
           </div>
 
           {showPrivacyInfo && (
-            <div className="px-4 py-3 bg-[var(--bg-interactive)] border-b border-[var(--border-subtle)] text-xs text-[var(--text-secondary)] space-y-1.5">
+            <div className="px-3.5 sm:px-4 py-3 bg-[var(--bg-interactive)] border-b border-[var(--border-subtle)] text-xs text-[var(--text-secondary)] space-y-1.5">
               <p className="text-[var(--text-primary)] font-semibold">
                 AI & Privacy Disclosure
               </p>
@@ -326,7 +326,7 @@ export const AssistantWidget: React.FC = () => {
 
           {/* 3. Main Body: Either Consent-Based Brief Collector OR Conversation Feed */}
           {showBriefForm ? (
-            <div className="p-4 overflow-y-auto space-y-4 flex-1 bg-[var(--bg-canvas)]">
+            <div className="p-3.5 sm:p-4 overflow-y-auto space-y-4 flex-1 bg-[var(--bg-canvas)]">
               <div className="space-y-1">
                 <p className="font-mono text-xs text-[var(--accent-primary)] font-semibold">
                   Preliminary Project Information (With Consent)
@@ -339,20 +339,20 @@ export const AssistantWidget: React.FC = () => {
               {briefSubmitted ? (
                 <div className="ds-surface-inset p-4 space-y-3">
                   <div className="flex items-center gap-2 text-xs font-semibold text-[var(--accent-primary)]">
-                    <Check className="w-4 h-4" />
+                    <Check className="w-4 h-4 shrink-0" />
                     <span>Preliminary brief recorded</span>
                   </div>
                   <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
                     Thank you, {briefName}. You can return to the chat or visit the Contact page to send a formal project inquiry.
                   </p>
-                  <div className="flex items-center gap-3 pt-1">
+                  <div className="flex flex-wrap items-center gap-2.5 pt-1">
                     <button
                       type="button"
                       onClick={() => {
                         setShowBriefForm(false);
                         handleRouteClick('/contact/');
                       }}
-                      className="ds-btn ds-btn-primary px-3 py-1.5 text-xs"
+                      className="ds-btn ds-btn-primary min-h-[40px] px-3 py-2 text-xs"
                     >
                       Go to Contact Page
                     </button>
@@ -362,7 +362,7 @@ export const AssistantWidget: React.FC = () => {
                         setBriefSubmitted(false);
                         setShowBriefForm(false);
                       }}
-                      className="ds-btn ds-btn-secondary px-3 py-1.5 text-xs"
+                      className="ds-btn ds-btn-secondary min-h-[40px] px-3 py-2 text-xs"
                     >
                       Return to Chat
                     </button>
@@ -439,29 +439,29 @@ export const AssistantWidget: React.FC = () => {
                     />
                   </div>
 
-                  <label className="flex items-start gap-2 pt-1 cursor-pointer">
+                  <label className="flex items-start gap-2.5 pt-1 cursor-pointer">
                     <input
                       type="checkbox"
                       checked={briefConsent}
                       onChange={(e) => setBriefConsent(e.target.checked)}
-                      className="mt-0.5 accent-[var(--accent-primary)]"
+                      className="mt-0.5 w-4 h-4 accent-[var(--accent-primary)] shrink-0"
                     />
                     <span className="text-[11px] text-[var(--text-secondary)] leading-snug">
                       I consent to sharing these preliminary project details so the assistant can summarize my inquiry for MD Selim.
                     </span>
                   </label>
 
-                  <div className="pt-2 flex items-center justify-between gap-2">
+                  <div className="pt-2 flex flex-wrap items-center justify-between gap-2">
                     <button
                       type="button"
                       onClick={() => setShowBriefForm(false)}
-                      className="ds-btn ds-btn-secondary px-3 py-1.5 text-xs"
+                      className="ds-btn ds-btn-secondary min-h-[40px] px-3 py-1.5 text-xs"
                     >
                       Cancel
                     </button>
                     <button
                       type="submit"
-                      className="ds-btn ds-btn-primary px-4 py-1.5 text-xs"
+                      className="ds-btn ds-btn-primary min-h-[40px] px-4 py-1.5 text-xs"
                     >
                       Save Preliminary Brief
                     </button>
@@ -470,7 +470,7 @@ export const AssistantWidget: React.FC = () => {
               )}
             </div>
           ) : (
-            <div className="p-4 overflow-y-auto space-y-4 flex-1 bg-[var(--bg-canvas)]">
+            <div className="p-3.5 sm:p-4 overflow-y-auto space-y-4 flex-1 bg-[var(--bg-canvas)]">
               {messages.map((msg) => (
                 <div
                   key={msg.id}
@@ -479,7 +479,7 @@ export const AssistantWidget: React.FC = () => {
                   }`}
                 >
                   <div
-                    className={`max-w-[88%] rounded-xl px-3.5 py-2.5 text-xs sm:text-sm leading-relaxed ${
+                    className={`max-w-[92%] sm:max-w-[88%] rounded-xl px-3.5 py-2.5 text-xs sm:text-sm leading-relaxed ${
                       msg.role === 'user'
                         ? 'bg-[var(--accent-primary)] text-[var(--accent-on-primary)] font-medium'
                         : 'bg-[var(--bg-elevated)] border border-[var(--border-subtle)] text-[var(--text-primary)]'
@@ -488,8 +488,8 @@ export const AssistantWidget: React.FC = () => {
                     <p
                       className={
                         msg.role === 'user'
-                          ? 'text-[var(--accent-on-primary)] whitespace-pre-line'
-                          : 'text-[var(--text-primary)] whitespace-pre-line'
+                          ? 'text-[var(--accent-on-primary)] whitespace-pre-line break-words'
+                          : 'text-[var(--text-primary)] whitespace-pre-line break-words'
                       }
                     >
                       {msg.text}
@@ -512,10 +512,10 @@ export const AssistantWidget: React.FC = () => {
                             key={`${msg.id}-${route.path}-${route.label}`}
                             type="button"
                             onClick={() => handleRouteClick(route.path)}
-                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-[var(--bg-interactive)] border border-[var(--border-default)] hover:border-[var(--border-accent)] text-[11px] font-mono text-[var(--accent-primary)] transition-colors cursor-pointer"
+                            className="inline-flex items-center gap-1 min-h-[36px] px-2.5 py-1.5 rounded-md bg-[var(--bg-interactive)] border border-[var(--border-default)] hover:border-[var(--border-accent)] text-[11px] font-mono text-[var(--accent-primary)] transition-colors cursor-pointer"
                           >
                             <span>{route.label}</span>
-                            <ArrowRight className="w-3 h-3" />
+                            <ArrowRight className="w-3 h-3 shrink-0" />
                           </button>
                         ))}
                       </div>
@@ -535,7 +535,7 @@ export const AssistantWidget: React.FC = () => {
                         key={prompt}
                         type="button"
                         onClick={() => void sendMessage(prompt)}
-                        className="text-left px-3 py-2 rounded-lg bg-[var(--bg-elevated)] border border-[var(--border-subtle)] hover:border-[var(--border-interactive)] text-xs text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
+                        className="min-h-[42px] flex items-center text-left px-3 py-2 rounded-lg bg-[var(--bg-elevated)] border border-[var(--border-subtle)] hover:border-[var(--border-interactive)] text-xs text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
                       >
                         {prompt}
                       </button>
@@ -582,19 +582,19 @@ export const AssistantWidget: React.FC = () => {
                       : 'Ask about services, SEO, work, or process...'
                   }
                   aria-label="Ask MD Selim's AI Assistant"
-                  className="ds-input text-xs py-2 flex-1"
+                  className="ds-input text-xs py-2 flex-1 min-w-0"
                 />
                 <button
                   type="submit"
                   disabled={isLoading || !inputText.trim() || sessionLimitReached}
                   aria-label="Send message"
-                  className="ds-btn ds-btn-primary px-3.5 py-2 text-xs"
+                  className="ds-btn ds-btn-primary min-h-[44px] min-w-[44px] px-3.5 py-2 text-xs shrink-0"
                 >
                   <Send className="w-3.5 h-3.5" />
                 </button>
               </div>
 
-              <div className="flex items-center justify-between text-[10px] font-mono text-[var(--text-secondary)]">
+              <div className="flex flex-wrap items-center justify-between gap-2 text-[10px] font-mono text-[var(--text-secondary)]">
                 <span>AI Assistant · Not Selim directly</span>
                 <span className="tabular-nums">
                   {inputText.length}/{CHATBOT_LIMITS.MAX_MESSAGE_CHARS}
@@ -611,16 +611,16 @@ export const AssistantWidget: React.FC = () => {
         aria-expanded={isOpen}
         aria-label={isOpen ? 'Close AI Assistant' : 'Open AI Assistant'}
         onClick={() => setIsOpen((prev) => !prev)}
-        className="ds-btn ds-btn-primary px-4 py-2.5 text-xs sm:text-sm shadow-lg"
+        className="ds-btn ds-btn-primary min-h-[44px] px-4 py-2.5 text-xs sm:text-sm shadow-lg"
       >
         {isOpen ? (
           <>
-            <X className="w-4 h-4" />
+            <X className="w-4 h-4 shrink-0" />
             <span>Close Assistant</span>
           </>
         ) : (
           <>
-            <MessageSquare className="w-4 h-4" />
+            <MessageSquare className="w-4 h-4 shrink-0" />
             <span>Ask AI Assistant</span>
           </>
         )}
