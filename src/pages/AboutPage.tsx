@@ -12,6 +12,10 @@ export const AboutPage: React.FC = () => {
   return (
     <div>
       <PageHeader
+        breadcrumbs={[
+          { label: 'Home', path: '/' },
+          { label: 'About' },
+        ]}
         kicker={aboutContent.kicker}
         title={aboutContent.headline}
         description={aboutContent.lead}

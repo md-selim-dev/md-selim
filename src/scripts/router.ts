@@ -1,65 +1,73 @@
 import { useEffect, useState } from 'react';
-import { RoutePath, siteConfig } from '../config/siteConfig';
+import { RoutePath } from '../config/siteConfig';
+import { applyPageSeo } from './seoSchema';
 
-const VALID_ROUTES: RoutePath[] = [
+const PRIMARY_ROUTES: RoutePath[] = [
   '/',
   '/services/',
   '/work/',
   '/about/',
   '/insights/',
   '/contact/',
+  '/404/',
 ];
 
 /**
- * Normalizes any pathname into one of the six canonical routes.
+ * Normalizes any pathname into one of the six canonical routes, or '/404/' for unknown paths.
  * Ensures both `/services` and `/services/` resolve cleanly to `/services/`.
  */
 export function normalizeRoutePath(rawPath: string): RoutePath {
-  if (!rawPath || rawPath === '/') {
+  if (!rawPath || rawPath === '/' || rawPath === '/index.html') {
     return '/';
   }
   const clean = rawPath.split('?')[0].split('#')[0];
+  if (clean === '/404.html') {
+    return '/404/';
+  }
   const withTrailingSlash = clean.endsWith('/') ? clean : `${clean}/`;
 
-  if (VALID_ROUTES.includes(withTrailingSlash as RoutePath)) {
+  if (PRIMARY_ROUTES.includes(withTrailingSlash as RoutePath)) {
     return withTrailingSlash as RoutePath;
   }
-  return '/';
+  return '/404/';
 }
 
 /**
- * Navigates to a route using the History API and notifies listeners.
+ * Navigates to a route using the History API (with optional query params) and notifies listeners.
  */
-export function navigateTo(path: RoutePath): void {
+export function navigateTo(
+  path: RoutePath,
+  queryParams?: Record<string, string | null>
+): void {
   const normalized = normalizeRoutePath(path);
-  if (window.location.pathname !== normalized) {
-    window.history.pushState({ path: normalized }, '', normalized);
+  let targetUrl: string = normalized;
+
+  if (queryParams) {
+    const searchParams = new URLSearchParams();
+    Object.entries(queryParams).forEach(([k, v]) => {
+      if (v) searchParams.set(k, v);
+    });
+    const qs = searchParams.toString();
+    if (qs) {
+      targetUrl = `${normalized}?${qs}`;
+    }
   }
-  window.dispatchEvent(new CustomEvent('mdselim:routechange', { detail: normalized }));
+
+  if (`${window.location.pathname}${window.location.search}` !== targetUrl) {
+    window.history.pushState({ path: normalized }, '', targetUrl);
+  }
+  window.dispatchEvent(
+    new CustomEvent('mdselim:routechange', { detail: normalized })
+  );
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 /**
- * Updates document title and meta description whenever the active route changes.
+ * Updates document title, meta description, canonical URL, OpenGraph, Twitter cards,
+ * and Schema.org JSON-LD whenever the active route changes.
  */
 export function syncRouteMetadata(route: RoutePath): void {
-  const meta = siteConfig.seo[route] ?? siteConfig.seo['/'];
-  document.title = meta.title;
-
-  const descriptionTag = document.querySelector('meta[name="description"]');
-  if (descriptionTag) {
-    descriptionTag.setAttribute('content', meta.description);
-  }
-
-  const ogTitleTag = document.querySelector('meta[property="og:title"]');
-  if (ogTitleTag) {
-    ogTitleTag.setAttribute('content', meta.title);
-  }
-
-  const ogDescriptionTag = document.querySelector('meta[property="og:description"]');
-  if (ogDescriptionTag) {
-    ogDescriptionTag.setAttribute('content', meta.description);
-  }
+  applyPageSeo(route);
 }
 
 /**
@@ -102,3 +110,4 @@ export function useRouter() {
     navigate: navigateTo,
   };
 }
+

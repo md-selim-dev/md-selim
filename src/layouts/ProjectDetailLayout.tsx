@@ -1,5 +1,6 @@
 import React from 'react';
 import { ArrowLeft, ArrowRight, Check } from 'lucide-react';
+import { Breadcrumbs } from '../components/Breadcrumbs';
 import { Button } from '../components/Button';
 import { SectionContainer } from '../components/SectionContainer';
 import { VisualWireframeCanvas } from '../components/VisualWireframeCanvas';
@@ -22,15 +23,24 @@ export const ProjectDetailLayout: React.FC<ProjectDetailLayoutProps> = ({
   return (
     <article>
       <SectionContainer surface="canvas" spacing="compact" borderBottom>
-        <div className="space-y-6">
-          <button
-            type="button"
-            onClick={onBack}
-            className="inline-flex items-center gap-2 min-h-[44px] py-2 font-mono text-xs font-medium text-[var(--accent-primary)] hover:underline cursor-pointer"
-          >
-            <ArrowLeft className="w-3.5 h-3.5" />
-            Back to all projects
-          </button>
+        <div className="space-y-5">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <Breadcrumbs
+              items={[
+                { label: 'Home', path: '/' },
+                { label: 'Work', onClick: onBack },
+                { label: project.title },
+              ]}
+            />
+            <button
+              type="button"
+              onClick={onBack}
+              className="inline-flex items-center gap-2 min-h-[44px] py-2 font-mono text-xs font-medium text-[var(--accent-primary)] hover:underline cursor-pointer"
+            >
+              <ArrowLeft className="w-3.5 h-3.5" />
+              Back to all projects
+            </button>
+          </div>
 
           <div className="max-w-3xl space-y-4">
             <p className={themeTokens.typography.metadata}>
@@ -147,7 +157,10 @@ export const ProjectDetailLayout: React.FC<ProjectDetailLayoutProps> = ({
                   Start an Inquiry
                   <ArrowRight className="w-3.5 h-3.5" />
                 </Button>
-                <Button variant="secondary" size="sm" onClick={onBack}>
+                <Button to="/services/" variant="secondary" size="sm">
+                  Explore Services
+                </Button>
+                <Button variant="quiet" size="sm" onClick={onBack}>
                   All Projects
                 </Button>
               </div>
@@ -158,3 +171,4 @@ export const ProjectDetailLayout: React.FC<ProjectDetailLayoutProps> = ({
     </article>
   );
 };
+

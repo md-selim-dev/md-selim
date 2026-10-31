@@ -90,7 +90,7 @@ export const Footer: React.FC = () => {
           <p>
             © {currentYear} {siteConfig.brand.name} ({siteConfig.brand.domain}). All rights reserved.
           </p>
-          <div className="flex items-center gap-4">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
             {siteConfig.socials.map((social, idx) => (
               <React.Fragment key={social.platform}>
                 {idx > 0 && <span aria-hidden="true">·</span>}
@@ -104,9 +104,17 @@ export const Footer: React.FC = () => {
                 </a>
               </React.Fragment>
             ))}
+            <span aria-hidden="true">·</span>
+            <a
+              href="/sitemap.xml"
+              className="hover:text-[var(--accent-primary)] transition-colors whitespace-nowrap"
+            >
+              XML Sitemap
+            </a>
           </div>
         </div>
       </div>
     </footer>
   );
 };
+

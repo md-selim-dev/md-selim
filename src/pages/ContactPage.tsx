@@ -70,6 +70,10 @@ export const ContactPage: React.FC = () => {
   return (
     <div>
       <PageHeader
+        breadcrumbs={[
+          { label: 'Home', path: '/' },
+          { label: 'Contact' },
+        ]}
         kicker="Contact & Project Inquiry"
         title="Discuss your website project."
         description="Whether you are planning a new Webflow website, a focused landing page, an on-page and technical SEO setup, or ongoing website maintenance, share your details below."

@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630" role="img" aria-label="MD SELIM — Websites built for clarity, credibility, and growth.">
+  <defs>
+    <radialGradient id="emeraldGlow" cx="75%" cy="25%" r="60%">
+      <stop offset="0%" stop-color="#10B981" stop-opacity="0.18" />
+      <stop offset="100%" stop-color="#061411" stop-opacity="0" />
+    </radialGradient>
+    <pattern id="grid" width="48" height="48" patternUnits="userSpaceOnUse">
+      <path d="M 48 0 L 0 0 0 48" fill="none" stroke="#10B981" stroke-width="1" stroke-opacity="0.08" />
+    </pattern>
+  </defs>
+
+  <rect width="1200" height="630" fill="#061411" />
+  <rect width="1200" height="630" fill="url(#grid)" />
+  <rect width="1200" height="630" fill="url(#emeraldGlow)" />
+
+  <!-- Outer Architectural Frame -->
+  <rect x="64" y="64" width="1072" height="502" rx="16" fill="#0B241F" stroke="#10B981" stroke-opacity="0.28" stroke-width="1.5" />
+
+  <!-- Top Metadata Line -->
+  <text x="116" y="138" fill="#10B981" font-family="JetBrains Mono, monospace" font-size="18" font-weight="600" letter-spacing="1.5">
+    MD SELIM · MDSELIM.COM
+  </text>
+
+  <!-- Primary Brand Positioning Headline -->
+  <text x="116" y="232" fill="#F0FDF8" font-family="Plus Jakarta Sans, system-ui, sans-serif" font-size="54" font-weight="700">
+    Websites built for clarity,
+  </text>
+  <text x="116" y="302" fill="#F0FDF8" font-family="Plus Jakarta Sans, system-ui, sans-serif" font-size="54" font-weight="700">
+    credibility, and growth.
+  </text>
+
+  <!-- Supporting Description -->
+  <text x="116" y="376" fill="#8DAAA2" font-family="Plus Jakarta Sans, system-ui, sans-serif" font-size="24" font-weight="400">
+    Helping small service businesses build professional Webflow websites
+  </text>
+  <text x="116" y="412" fill="#8DAAA2" font-family="Plus Jakarta Sans, system-ui, sans-serif" font-size="24" font-weight="400">
+    with a strong user experience and an SEO-ready foundation.
+  </text>
+
+  <!-- Bottom Divider & Capabilities Strip -->
+  <line x1="116" y1="470" x2="1084" y2="470" stroke="#10B981" stroke-opacity="0.2" stroke-width="1" />
+  <text x="116" y="514" fill="#F0FDF8" font-family="JetBrains Mono, monospace" font-size="16" font-weight="500">
+    01. Webflow Websites &amp; Landing Pages   ·   02. On-Page &amp; Technical SEO   ·   03. Ongoing Maintenance
+  </text>
+</svg>

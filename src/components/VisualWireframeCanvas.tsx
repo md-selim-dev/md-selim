@@ -22,6 +22,8 @@ export const VisualWireframeCanvas: React.FC<VisualWireframeCanvasProps> = ({
   if (variant === 'hero-architecture') {
     return (
       <div
+        role="img"
+        aria-label="Architectural blueprint of mdselim.com showing H1 primary positioning, UX flow, semantic HTML5, JSON-LD structured data, sitemap, and canonical URL configuration."
         className={`ds-card w-full h-full min-h-[340px] sm:min-h-[380px] p-4 sm:p-6 flex flex-col justify-between overflow-hidden ${className}`}
       >
         {/* Top Browser Bar */}
@@ -134,6 +136,8 @@ export const VisualWireframeCanvas: React.FC<VisualWireframeCanvasProps> = ({
   if (variant === 'founder-studio') {
     return (
       <div
+        role="img"
+        aria-label="MD Selim independent practice summary highlighting structure before decoration, search-ready engineering, and direct communication."
         className={`ds-card w-full p-5 sm:p-6 flex flex-col justify-between space-y-6 ${className}`}
       >
         <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--border-subtle)] pb-4">
@@ -214,6 +218,8 @@ export const VisualWireframeCanvas: React.FC<VisualWireframeCanvasProps> = ({
 
   return (
     <div
+      role="img"
+      aria-label={`${variantMeta.label}: ${variantMeta.layoutType} focused on ${variantMeta.focusArea} with ${variantMeta.schemaType}.`}
       className={`ds-surface-inset w-full p-4 sm:p-5 flex flex-col justify-between gap-4 ${className}`}
     >
       <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-[var(--border-subtle)] text-xs">

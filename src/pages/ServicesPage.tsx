@@ -18,6 +18,10 @@ export const ServicesPage: React.FC = () => {
   return (
     <div>
       <PageHeader
+        breadcrumbs={[
+          { label: 'Home', path: '/' },
+          { label: 'Services' },
+        ]}
         kicker="Services & Scope Specifications"
         title="Webflow websites, landing pages, SEO setup, and ongoing maintenance."
         description="Clear, practical web development services built for small service businesses. Every engagement includes defined deliverables and transparent scope boundaries."

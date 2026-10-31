@@ -1,0 +1,8 @@
+# robots.txt for https://mdselim.com
+# MD SELIM — Websites built for clarity, credibility, and growth.
+
+User-agent: *
+Allow: /
+Disallow: /api/
+
+Sitemap: https://mdselim.com/sitemap.xml

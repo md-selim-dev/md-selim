@@ -196,7 +196,9 @@ export const HomePage: React.FC = () => {
             <ProjectCard
               key={project.id}
               project={project}
-              onSelectProject={() => navigateTo('/work/')}
+              onSelectProject={(proj) =>
+                navigateTo('/work/', { project: proj.slug })
+              }
             />
           ))}
         </div>
@@ -277,7 +279,9 @@ export const HomePage: React.FC = () => {
             <ArticleCard
               key={article.id}
               article={article}
-              onSelectArticle={() => navigateTo('/insights/')}
+              onSelectArticle={(item) =>
+                navigateTo('/insights/', { article: item.slug })
+              }
             />
           ))}
         </div>

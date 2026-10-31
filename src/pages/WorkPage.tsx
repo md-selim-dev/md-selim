@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ProjectCard } from '../components/ProjectCard';
 import { SectionContainer } from '../components/SectionContainer';
+import { siteConfig } from '../config/siteConfig';
 import {
   ProjectClassification,
   ProjectItem,
@@ -8,6 +9,7 @@ import {
 } from '../data/workData';
 import { PageHeader } from '../layouts/PageHeader';
 import { ProjectDetailLayout } from '../layouts/ProjectDetailLayout';
+import { applyPageSeo } from '../scripts/seoSchema';
 
 const CLASSIFICATIONS: ProjectClassification[] = [
   'All',
@@ -15,10 +17,50 @@ const CLASSIFICATIONS: ProjectClassification[] = [
   'Client Architecture',
 ];
 
+function getInitialProjectFromUrl(): ProjectItem | null {
+  if (typeof window === 'undefined') return null;
+  const params = new URLSearchParams(window.location.search);
+  const slug = params.get('project');
+  if (!slug) return null;
+  return workData.find((p) => p.slug === slug || p.id === slug) ?? null;
+}
+
 export const WorkPage: React.FC = () => {
   const [selectedClassification, setSelectedClassification] =
     useState<ProjectClassification>('All');
-  const [activeProject, setActiveProject] = useState<ProjectItem | null>(null);
+  const [activeProject, setActiveProject] = useState<ProjectItem | null>(() =>
+    getInitialProjectFromUrl()
+  );
+
+  // Sync URL query parameter and dynamic SEO metadata + Schema.org JSON-LD when inspecting a project
+  useEffect(() => {
+    if (activeProject) {
+      const canonicalUrl = `${siteConfig.brand.siteUrl}/work/?project=${activeProject.slug}`;
+      if (window.location.search !== `?project=${activeProject.slug}`) {
+        window.history.replaceState(
+          { path: '/work/' },
+          '',
+          `/work/?project=${activeProject.slug}`
+        );
+      }
+      applyPageSeo('/work/', {
+        title: `${activeProject.title} | MD SELIM`,
+        description: activeProject.summary,
+        canonicalUrl,
+        project: activeProject,
+        breadcrumbs: [
+          { name: 'Home', url: `${siteConfig.brand.siteUrl}/` },
+          { name: 'Work', url: `${siteConfig.brand.siteUrl}/work/` },
+          { name: activeProject.title, url: canonicalUrl },
+        ],
+      });
+    } else {
+      if (window.location.search.includes('project=')) {
+        window.history.replaceState({ path: '/work/' }, '', '/work/');
+      }
+      applyPageSeo('/work/');
+    }
+  }, [activeProject]);
 
   const filteredProjects =
     selectedClassification === 'All'
@@ -40,10 +82,14 @@ export const WorkPage: React.FC = () => {
   return (
     <div>
       <PageHeader
+        breadcrumbs={[
+          { label: 'Home', path: '/' },
+          { label: 'Work' },
+        ]}
         kicker="Work & Architecture Showcases"
         title="Website structures built for clarity, usability, and search readiness."
         description="Explore reference website builds, landing page systems, and production architectures. To maintain complete transparency, every project clearly states whether it is a Demo / Concept Build or Live Client Architecture."
-        metaLine="Click any project card to open its full architectural breakdown, UX decisions, and technical SEO specification."
+        metaLine="Select any project card to open its full architectural breakdown, UX decisions, and technical SEO specification."
       />
 
       <SectionContainer surface="canvas" spacing="default">
@@ -97,3 +143,4 @@ export const WorkPage: React.FC = () => {
     </div>
   );
 };
+

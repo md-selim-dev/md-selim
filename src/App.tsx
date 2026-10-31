@@ -9,6 +9,7 @@ import { AboutPage } from './pages/AboutPage';
 import { ContactPage } from './pages/ContactPage';
 import { HomePage } from './pages/HomePage';
 import { InsightsPage } from './pages/InsightsPage';
+import { NotFoundPage } from './pages/NotFoundPage';
 import { ServicesPage } from './pages/ServicesPage';
 import { WorkPage } from './pages/WorkPage';
 import { useRouter } from './scripts/router';
@@ -30,10 +31,13 @@ export default function App() {
         return <InsightsPage />;
       case '/contact/':
         return <ContactPage />;
+      case '/404/':
+        return <NotFoundPage />;
       default:
-        return <HomePage />;
+        return <NotFoundPage />;
     }
   };
 
   return <BaseLayout currentRoute={currentRoute}>{renderPage()}</BaseLayout>;
 }
+

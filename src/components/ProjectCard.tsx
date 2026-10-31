@@ -38,7 +38,16 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
           </p>
 
           <h3 className="text-xl sm:text-2xl font-bold tracking-tight text-[var(--text-primary)]">
-            {project.title}
+            <a
+              href={`/work/?project=${project.slug}`}
+              onClick={(e) => {
+                e.preventDefault();
+                onSelectProject(project);
+              }}
+              className="hover:text-[var(--accent-primary)] transition-colors"
+            >
+              {project.title}
+            </a>
           </h3>
 
           <p className="text-sm sm:text-base text-[var(--text-secondary)] leading-relaxed">
@@ -50,14 +59,17 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
           </p>
 
           <div className="pt-2 flex flex-wrap items-center gap-4">
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={() => onSelectProject(project)}
+            <a
+              href={`/work/?project=${project.slug}`}
+              onClick={(e) => {
+                e.preventDefault();
+                onSelectProject(project);
+              }}
+              className="ds-btn ds-btn-secondary min-h-[44px] px-4 py-2 text-xs whitespace-normal sm:whitespace-nowrap"
             >
-              View Project Breakdown
+              <span>View Project Breakdown</span>
               <ArrowRight className="w-3.5 h-3.5" />
-            </Button>
+            </a>
             <Button to="/contact/" variant="quiet" size="sm">
               Inquire About a Similar Build
             </Button>

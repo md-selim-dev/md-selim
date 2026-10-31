@@ -1,4 +1,5 @@
 import React from 'react';
+import { BreadcrumbItem, Breadcrumbs } from '../components/Breadcrumbs';
 import { SectionContainer } from '../components/SectionContainer';
 import { themeTokens } from '../styles/themeTokens';
 
@@ -7,6 +8,7 @@ export interface PageHeaderProps {
   title: string;
   description: string;
   metaLine?: string;
+  breadcrumbs?: BreadcrumbItem[];
   actions?: React.ReactNode;
 }
 
@@ -15,11 +17,15 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
   title,
   description,
   metaLine,
+  breadcrumbs,
   actions,
 }) => {
   return (
     <SectionContainer surface="canvas" spacing="compact" borderBottom>
       <div className="max-w-3xl space-y-5">
+        {breadcrumbs && breadcrumbs.length > 0 && (
+          <Breadcrumbs items={breadcrumbs} />
+        )}
         <p className={themeTokens.typography.kicker}>{kicker}</p>
         <h1 className={themeTokens.typography.pageHeadline}>{title}</h1>
         <p className={themeTokens.typography.bodyLead}>{description}</p>
@@ -33,3 +39,4 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
     </SectionContainer>
   );
 };
+

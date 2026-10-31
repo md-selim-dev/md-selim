@@ -4,7 +4,8 @@ export type RoutePath =
   | '/work/'
   | '/about/'
   | '/insights/'
-  | '/contact/';
+  | '/contact/'
+  | '/404/';
 
 export interface NavItem {
   label: string;
@@ -18,6 +19,17 @@ export interface SocialLink {
   handle: string;
 }
 
+export interface RouteSeoMetadata {
+  title: string;
+  description: string;
+  canonicalPath: RoutePath;
+  ogType: 'website' | 'article';
+  robots: 'index, follow' | 'noindex, nofollow';
+  primaryTopic: string;
+  searchIntent: string;
+  breadcrumbLabel: string;
+}
+
 export interface SiteConfig {
   brand: {
     name: string;
@@ -29,12 +41,21 @@ export interface SiteConfig {
      */
     logoUrl: string | null;
     logoAlt: string;
+    ogImageUrl: string;
+    ogImageAlt: string;
     positioning: string;
     description: string;
     founderName: string;
     role: string;
     location: string;
     availabilityLabel: string;
+  };
+  verification: {
+    /**
+     * Google Search Console verification meta tag token.
+     * Populated via VITE_GOOGLE_SITE_VERIFICATION environment variable when verifying ownership in Search Console.
+     */
+    googleSiteVerification: string;
   };
   servicesSummary: {
     core: {
@@ -67,14 +88,15 @@ export interface SiteConfig {
     consultationDuration: string;
   };
   socials: SocialLink[];
-  seo: Record<
-    RoutePath,
-    {
-      title: string;
-      description: string;
-    }
-  >;
+  seo: Record<RoutePath, RouteSeoMetadata>;
 }
+
+const envGoogleVerification =
+  typeof import.meta !== 'undefined' &&
+  import.meta.env &&
+  typeof import.meta.env.VITE_GOOGLE_SITE_VERIFICATION === 'string'
+    ? import.meta.env.VITE_GOOGLE_SITE_VERIFICATION.trim()
+    : '';
 
 export const siteConfig: SiteConfig = {
   brand: {
@@ -82,7 +104,10 @@ export const siteConfig: SiteConfig = {
     domain: 'mdselim.com',
     siteUrl: 'https://mdselim.com',
     logoUrl: null,
-    logoAlt: 'MD SELIM Logo',
+    logoAlt: 'MD SELIM — Webflow Developer & Technical SEO Architect',
+    ogImageUrl: 'https://mdselim.com/og-card.svg',
+    ogImageAlt:
+      'MD SELIM (mdselim.com) — Websites built for clarity, credibility, and growth for small service businesses.',
     positioning: 'Websites built for clarity, credibility, and growth.',
     description:
       'I help small service businesses build professional websites with a strong user experience and an SEO-ready foundation.',
@@ -90,6 +115,9 @@ export const siteConfig: SiteConfig = {
     role: 'Webflow Developer & Technical SEO Architect',
     location: 'Remote · Serving Small Service Businesses Worldwide',
     availabilityLabel: 'Accepting Q4 client engagements',
+  },
+  verification: {
+    googleSiteVerification: envGoogleVerification,
   },
   servicesSummary: {
     core: {
@@ -152,34 +180,82 @@ export const siteConfig: SiteConfig = {
   ],
   seo: {
     '/': {
-      title: 'MD SELIM — Websites Built for Clarity, Credibility, and Growth',
+      title: 'MD SELIM — Websites Built for Clarity, Credibility & Growth',
       description:
-        'I help small service businesses build professional Webflow websites with a strong user experience and an SEO-ready foundation.',
+        'I help small service businesses build professional Webflow websites, conversion-ready landing pages, and technical SEO foundations that earn client trust.',
+      canonicalPath: '/',
+      ogType: 'website',
+      robots: 'index, follow',
+      primaryTopic: 'Webflow Website Development & Technical SEO for Small Service Businesses',
+      searchIntent: 'Commercial & Brand Discovery',
+      breadcrumbLabel: 'Home',
     },
     '/services/': {
-      title: 'Services — Webflow Development, Technical SEO & Ongoing Care | MD SELIM',
+      title: 'Services — Webflow Websites, Landing Pages & SEO | MD SELIM',
       description:
-        'Core Webflow websites and landing pages, supporting on-page and technical SEO setup, and recurring website maintenance for small service businesses.',
+        'Explore Webflow website development, landing pages, basic on-page and technical SEO setup, and ongoing website maintenance with clear scope deliverables.',
+      canonicalPath: '/services/',
+      ogType: 'website',
+      robots: 'index, follow',
+      primaryTopic: 'Webflow Websites, Landing Pages, On-Page/Technical SEO & Maintenance Scope',
+      searchIntent: 'Commercial Service Evaluation',
+      breadcrumbLabel: 'Services',
     },
     '/work/': {
-      title: 'Selected Work & Case Studies | MD SELIM',
+      title: 'Work & Website Architecture Case Studies | MD SELIM',
       description:
-        'Explore Webflow websites, landing pages, and technical SEO foundations built for small service businesses seeking clarity and qualified client inquiries.',
+        'Review Webflow website architectures, service landing page systems, and technical SEO implementations built for small service businesses and B2B practices.',
+      canonicalPath: '/work/',
+      ogType: 'website',
+      robots: 'index, follow',
+      primaryTopic: 'Website Architecture Portfolio, Demo Builds & Live Client Systems',
+      searchIntent: 'Commercial Proof & Architecture Evaluation',
+      breadcrumbLabel: 'Work',
     },
     '/about/': {
       title: 'About MD Selim — Webflow Developer & SEO Architect',
       description:
-        'Learn how MD Selim approaches website clarity, credibility, user experience, and search-ready engineering for service-based businesses.',
+        'Learn about MD Selim’s background, capabilities, and structured four-step working philosophy for building clear, search-ready service business websites.',
+      canonicalPath: '/about/',
+      ogType: 'website',
+      robots: 'index, follow',
+      primaryTopic: 'Professional Background, Webflow/SEO Capabilities & Working Philosophy',
+      searchIntent: 'Informational & Practitioner Credibility',
+      breadcrumbLabel: 'About',
     },
     '/insights/': {
-      title: 'Insights — Guides on Web Clarity, Webflow & On-Page SEO | MD SELIM',
+      title: 'Insights — Website Clarity, Webflow & SEO Guides | MD SELIM',
       description:
-        'Practical articles for small service business owners on website structure, conversion clarity, Webflow architecture, and technical SEO.',
+        'Practical articles for small service business owners covering website clarity, conversion positioning, Webflow maintainability, and technical SEO setup.',
+      canonicalPath: '/insights/',
+      ogType: 'website',
+      robots: 'index, follow',
+      primaryTopic: 'Educational Guides on Website Clarity, Webflow & Technical SEO',
+      searchIntent: 'Informational & Topic Discovery',
+      breadcrumbLabel: 'Insights',
     },
     '/contact/': {
-      title: 'Contact — Start a Project or Book a Discovery Call | MD SELIM',
+      title: 'Contact MD Selim — Request a Website or SEO Consultation',
       description:
-        'Get in touch with MD Selim to discuss a new Webflow website, landing page, technical SEO setup, or ongoing website maintenance.',
+        'Start a conversation with MD Selim about a new Webflow website, focused landing page, on-page and technical SEO setup, or ongoing website maintenance.',
+      canonicalPath: '/contact/',
+      ogType: 'website',
+      robots: 'index, follow',
+      primaryTopic: 'Project Inquiry & Consultation Booking',
+      searchIntent: 'Transactional / Direct Inquiry',
+      breadcrumbLabel: 'Contact',
+    },
+    '/404/': {
+      title: '404 — Page Not Found | MD SELIM',
+      description:
+        'The requested page could not be found on mdselim.com. Return to the homepage, explore Webflow and SEO services, or contact MD Selim.',
+      canonicalPath: '/404/',
+      ogType: 'website',
+      robots: 'noindex, nofollow',
+      primaryTopic: 'Page Not Found Recovery Navigation',
+      searchIntent: 'Navigational Recovery',
+      breadcrumbLabel: 'Page Not Found',
     },
   },
 };
+

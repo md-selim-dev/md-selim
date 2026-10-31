@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ArticleCard } from '../components/ArticleCard';
 import { SectionContainer } from '../components/SectionContainer';
+import { siteConfig } from '../config/siteConfig';
 import {
   InsightArticle,
   insightsContent,
@@ -8,6 +9,7 @@ import {
 } from '../content/insightsContent';
 import { ArticleLayout } from '../layouts/ArticleLayout';
 import { PageHeader } from '../layouts/PageHeader';
+import { applyPageSeo } from '../scripts/seoSchema';
 
 const TOPICS: InsightTopic[] = [
   'All Topics',
@@ -17,9 +19,50 @@ const TOPICS: InsightTopic[] = [
   'Website Maintenance',
 ];
 
+function getInitialArticleFromUrl(): InsightArticle | null {
+  if (typeof window === 'undefined') return null;
+  const params = new URLSearchParams(window.location.search);
+  const slug = params.get('article');
+  if (!slug) return null;
+  return insightsContent.find((a) => a.slug === slug || a.id === slug) ?? null;
+}
+
 export const InsightsPage: React.FC = () => {
   const [selectedTopic, setSelectedTopic] = useState<InsightTopic>('All Topics');
-  const [activeArticle, setActiveArticle] = useState<InsightArticle | null>(null);
+  const [activeArticle, setActiveArticle] = useState<InsightArticle | null>(() =>
+    getInitialArticleFromUrl()
+  );
+
+  // Sync URL query parameter and BlogPosting Schema.org JSON-LD when reading an article
+  useEffect(() => {
+    if (activeArticle) {
+      const canonicalUrl = `${siteConfig.brand.siteUrl}/insights/?article=${activeArticle.slug}`;
+      if (window.location.search !== `?article=${activeArticle.slug}`) {
+        window.history.replaceState(
+          { path: '/insights/' },
+          '',
+          `/insights/?article=${activeArticle.slug}`
+        );
+      }
+      applyPageSeo('/insights/', {
+        title: `${activeArticle.title} | MD SELIM`,
+        description: activeArticle.excerpt,
+        canonicalUrl,
+        ogType: 'article',
+        article: activeArticle,
+        breadcrumbs: [
+          { name: 'Home', url: `${siteConfig.brand.siteUrl}/` },
+          { name: 'Insights', url: `${siteConfig.brand.siteUrl}/insights/` },
+          { name: activeArticle.title, url: canonicalUrl },
+        ],
+      });
+    } else {
+      if (window.location.search.includes('article=')) {
+        window.history.replaceState({ path: '/insights/' }, '', '/insights/');
+      }
+      applyPageSeo('/insights/');
+    }
+  }, [activeArticle]);
 
   const filteredArticles =
     selectedTopic === 'All Topics'
@@ -41,6 +84,10 @@ export const InsightsPage: React.FC = () => {
   return (
     <div>
       <PageHeader
+        breadcrumbs={[
+          { label: 'Home', path: '/' },
+          { label: 'Insights' },
+        ]}
         kicker="Insights & Markdown Content Library"
         title="Practical articles on website clarity, Webflow architecture, and SEO."
         description="Guides written for small service business owners looking to build a credible website, understand on-page and technical SEO fundamentals, and maintain their site effectively."
@@ -98,3 +145,4 @@ export const InsightsPage: React.FC = () => {
     </div>
   );
 };
+

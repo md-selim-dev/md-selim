@@ -1,5 +1,6 @@
 import React from 'react';
 import { ArrowLeft, Check } from 'lucide-react';
+import { Breadcrumbs } from '../components/Breadcrumbs';
 import { Button } from '../components/Button';
 import { SectionContainer } from '../components/SectionContainer';
 import { InsightArticle } from '../content/insightsContent';
@@ -18,23 +19,34 @@ export const ArticleLayout: React.FC<ArticleLayoutProps> = ({ article, onBack })
     <article>
       <SectionContainer surface="canvas" spacing="compact" borderBottom>
         <div className="max-w-3xl space-y-5">
-          <button
-            type="button"
-            onClick={onBack}
-            className="inline-flex items-center gap-2 min-h-[44px] py-2 font-mono text-xs font-medium text-[var(--accent-primary)] hover:underline cursor-pointer"
-          >
-            <ArrowLeft className="w-3.5 h-3.5" />
-            Back to all Insights
-          </button>
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <Breadcrumbs
+              items={[
+                { label: 'Home', path: '/' },
+                { label: 'Insights', onClick: onBack },
+                { label: article.title },
+              ]}
+            />
+            <button
+              type="button"
+              onClick={onBack}
+              className="inline-flex items-center gap-2 min-h-[44px] py-2 font-mono text-xs font-medium text-[var(--accent-primary)] hover:underline cursor-pointer"
+            >
+              <ArrowLeft className="w-3.5 h-3.5" />
+              Back to all Insights
+            </button>
+          </div>
 
           <p className={themeTokens.typography.metadata}>
             <span className="text-[var(--accent-primary)]">{article.topic}</span>
             <span className="mx-2" aria-hidden="true">·</span>
-            <span>Published {article.publishedDate}</span>
+            <span>
+              Published <time>{article.publishedDate}</time>
+            </span>
             <span className="mx-2" aria-hidden="true">·</span>
             <span>{article.readTime}</span>
             <span className="mx-2" aria-hidden="true">·</span>
-            <span>Markdown Source</span>
+            <span>By MD Selim</span>
           </p>
 
           <h1 className="text-2xl sm:text-4xl font-bold tracking-tight text-[var(--text-primary)] leading-tight">
@@ -101,18 +113,24 @@ export const ArticleLayout: React.FC<ArticleLayoutProps> = ({ article, onBack })
             ))}
           </div>
 
-          {/* Article Footer CTA */}
+          {/* Article Footer CTA & Internal Links */}
           <div className="pt-8 border-t border-[var(--border-subtle)] flex flex-wrap items-center justify-between gap-4">
             <Button variant="secondary" size="sm" onClick={onBack}>
               <ArrowLeft className="w-3.5 h-3.5" />
               Return to Insights Index
             </Button>
-            <Button to="/contact/" variant="primary" size="sm">
-              Discuss Your Website Project
-            </Button>
+            <div className="flex flex-wrap items-center gap-3">
+              <Button to="/services/" variant="quiet" size="sm">
+                Explore Webflow & SEO Services
+              </Button>
+              <Button to="/contact/" variant="primary" size="sm">
+                Discuss Your Website Project
+              </Button>
+            </div>
           </div>
         </div>
       </SectionContainer>
     </article>
   );
 };
+
