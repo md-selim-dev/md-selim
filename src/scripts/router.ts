@@ -17,6 +17,29 @@ let routePreloaders: RoutePreloaderMap = {};
 const preloadedRoutes = new Set<RoutePath>();
 
 /**
+ * Returns 'auto' when the user has enabled prefers-reduced-motion: reduce,
+ * and 'smooth' otherwise.
+ */
+export function getPreferredScrollBehavior(): ScrollBehavior {
+  if (
+    typeof window !== 'undefined' &&
+    typeof window.matchMedia === 'function' &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  ) {
+    return 'auto';
+  }
+  return 'smooth';
+}
+
+/**
+ * Scrolls to the top of the viewport while respecting prefers-reduced-motion.
+ */
+export function scrollToTop(): void {
+  if (typeof window === 'undefined') return;
+  window.scrollTo({ top: 0, behavior: getPreferredScrollBehavior() });
+}
+
+/**
  * Registers dynamic import preloaders for lazy-loaded route bundles.
  */
 export function registerRoutePreloaders(preloaders: RoutePreloaderMap): void {
@@ -87,14 +110,19 @@ export function navigateTo(
   window.dispatchEvent(
     new CustomEvent('mdselim:routechange', { detail: normalized })
   );
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  scrollToTop();
 }
 
 /**
  * Updates document title, meta description, canonical URL, OpenGraph, Twitter cards,
  * and Schema.org JSON-LD whenever the active route changes.
+ * Note: '/work/' and '/insights/' manage their own index vs. detail SEO metadata inside
+ * WorkPage and InsightsPage so query-parameterized detail views are never overwritten.
  */
 export function syncRouteMetadata(route: RoutePath): void {
+  if (route === '/work/' || route === '/insights/') {
+    return;
+  }
   applyPageSeo(route);
 }
 

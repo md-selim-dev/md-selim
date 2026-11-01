@@ -1,43 +1,56 @@
 /**
- * Cloudflare Pages Function Middleware
- * 1. Permanently redirects requests from the default Pages domain (md-selim.pages.dev)
- *    to the primary custom domain (https://mdselim.com) with HTTP 301,
- *    preserving the full URL path and query parameters.
- * 2. Applies defensive HTTP security headers (HSTS, nosniff, Referrer-Policy,
- *    Permissions-Policy, CSP) across all responses.
- *
- * Does not redirect:
- * - Primary domain requests (mdselim.com, www.mdselim.com)
- * - Preview deployment subdomains (<hash>.md-selim.pages.dev, <branch>.md-selim.pages.dev)
+ * Cloudflare Pages Middleware
+ * 1. Enforces 301 Permanent Redirects from:
+ *    - *.pages.dev (e.g. md-selim.pages.dev) -> https://mdselim.com
+ *    - www.mdselim.com -> https://mdselim.com
+ *    - http://mdselim.com -> https://mdselim.com
+ *    while preserving the full request pathname and query string.
+ * 2. Applies hardened HTTP security headers at the edge.
  */
-const SECURITY_HEADERS = {
-  'X-Content-Type-Options': 'nosniff',
-  'X-DNS-Prefetch-Control': 'off',
-  'Referrer-Policy': 'strict-origin-when-cross-origin',
-  'Permissions-Policy':
-    'camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()',
-  'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload',
-  'Content-Security-Policy':
-    "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'",
-};
-
 export async function onRequest(context) {
   const url = new URL(context.request.url);
+  const hostname = url.hostname.toLowerCase();
 
-  if (url.hostname.toLowerCase() === 'md-selim.pages.dev') {
+  // Enforce canonical domain (https://mdselim.com) for pages.dev and www subdomains
+  const isPagesDev = hostname === 'md-selim.pages.dev' || hostname.endsWith('.md-selim.pages.dev');
+  const isWwwSubdomain = hostname === 'www.mdselim.com';
+  const isInsecureCanonical = hostname === 'mdselim.com' && url.protocol === 'http:';
+
+  if (isPagesDev || isWwwSubdomain || isInsecureCanonical) {
     const destination = `https://mdselim.com${url.pathname}${url.search}`;
-    return Response.redirect(destination, 301);
+    return new Response(null, {
+      status: 301,
+      headers: {
+        Location: destination,
+        'Cache-Control': 'public, max-age=31536000',
+        'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload',
+        'X-Content-Type-Options': 'nosniff',
+      },
+    });
   }
 
   const response = await context.next();
-  const securedResponse = new Response(response.body, response);
+  const newHeaders = new Headers(response.headers);
 
-  for (const [headerName, headerValue] of Object.entries(SECURITY_HEADERS)) {
-    if (!securedResponse.headers.has(headerName)) {
-      securedResponse.headers.set(headerName, headerValue);
-    }
-  }
+  newHeaders.set('X-Content-Type-Options', 'nosniff');
+  newHeaders.set('X-DNS-Prefetch-Control', 'off');
+  newHeaders.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+  newHeaders.set(
+    'Permissions-Policy',
+    'camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()'
+  );
+  newHeaders.set(
+    'Strict-Transport-Security',
+    'max-age=31536000; includeSubDomains; preload'
+  );
+  newHeaders.set(
+    'Content-Security-Policy',
+    "default-src 'self'; script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https:; connect-src 'self' https://cloudflareinsights.com; object-src 'none'; base-uri 'self'; form-action 'self'"
+  );
 
-  return securedResponse;
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers: newHeaders,
+  });
 }
-

@@ -9,6 +9,7 @@ import {
 } from '../data/workData';
 import { PageHeader } from '../layouts/PageHeader';
 import { ProjectDetailLayout } from '../layouts/ProjectDetailLayout';
+import { scrollToTop } from '../scripts/router';
 import { applyPageSeo } from '../scripts/seoSchema';
 
 const CLASSIFICATIONS: ProjectClassification[] = [
@@ -32,13 +33,26 @@ export const WorkPage: React.FC = () => {
     getInitialProjectFromUrl()
   );
 
+  // Keep activeProject synchronized when browser Back/Forward or route navigation changes ?project=
+  useEffect(() => {
+    const syncFromLocation = () => {
+      setActiveProject(getInitialProjectFromUrl());
+    };
+    window.addEventListener('popstate', syncFromLocation);
+    window.addEventListener('mdselim:routechange', syncFromLocation);
+    return () => {
+      window.removeEventListener('popstate', syncFromLocation);
+      window.removeEventListener('mdselim:routechange', syncFromLocation);
+    };
+  }, []);
+
   // Sync URL query parameter and dynamic SEO metadata + Schema.org JSON-LD when inspecting a project
   useEffect(() => {
     if (activeProject) {
       const canonicalUrl = `${siteConfig.brand.siteUrl}/work/?project=${activeProject.slug}`;
       if (window.location.search !== `?project=${activeProject.slug}`) {
-        window.history.replaceState(
-          { path: '/work/' },
+        window.history.pushState(
+          { path: '/work/', project: activeProject.slug },
           '',
           `/work/?project=${activeProject.slug}`
         );
@@ -56,7 +70,7 @@ export const WorkPage: React.FC = () => {
       });
     } else {
       if (window.location.search.includes('project=')) {
-        window.history.replaceState({ path: '/work/' }, '', '/work/');
+        window.history.pushState({ path: '/work/' }, '', '/work/');
       }
       applyPageSeo('/work/');
     }
@@ -73,7 +87,7 @@ export const WorkPage: React.FC = () => {
         project={activeProject}
         onBack={() => {
           setActiveProject(null);
-          window.scrollTo({ top: 0, behavior: 'smooth' });
+          scrollToTop();
         }}
       />
     );
@@ -108,6 +122,7 @@ export const WorkPage: React.FC = () => {
                   type="button"
                   role="tab"
                   aria-selected={active}
+                  aria-controls="work-projects-panel"
                   onClick={() =>
                     startTransition(() => {
                       setSelectedClassification(classification);
@@ -131,14 +146,14 @@ export const WorkPage: React.FC = () => {
         </div>
 
         {/* Reusable Project Cards List */}
-        <div className="space-y-10">
+        <div id="work-projects-panel" role="tabpanel" className="space-y-10">
           {filteredProjects.map((project) => (
             <ProjectCard
               key={project.id}
               project={project}
               onSelectProject={(proj) => {
                 setActiveProject(proj);
-                window.scrollTo({ top: 0, behavior: 'smooth' });
+                scrollToTop();
               }}
             />
           ))}

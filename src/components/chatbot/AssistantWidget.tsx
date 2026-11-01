@@ -14,7 +14,7 @@ import {
   CHATBOT_LIMITS,
   ChatSuggestedRoute,
 } from '../../data/chatbotKnowledge';
-import { navigateTo } from '../../scripts/router';
+import { getPreferredScrollBehavior, navigateTo } from '../../scripts/router';
 import {
   isValidEmailAddress,
   redactSensitivePatterns,
@@ -80,9 +80,25 @@ export const AssistantWidget: React.FC = () => {
 
   useEffect(() => {
     if (isOpen) {
-      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+      messagesEndRef.current?.scrollIntoView({
+        behavior: getPreferredScrollBehavior(),
+      });
     }
   }, [messages, isOpen, showBriefForm]);
+
+  // Allow keyboard users to close the assistant panel with Escape
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setIsOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isOpen]);
 
   const sendMessage = async (rawText: string) => {
     const sanitized = sanitizePlainText(rawText, CHATBOT_LIMITS.MAX_MESSAGE_CHARS + 50);
@@ -299,6 +315,7 @@ export const AssistantWidget: React.FC = () => {
                   setMessages([INITIAL_MESSAGE]);
                   setErrorBanner(null);
                   setShowBriefForm(false);
+                  setBriefSubmitted(false);
                 }}
                 className="inline-flex items-center justify-center w-9 h-9 sm:w-8 sm:h-8 rounded-md text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-interactive)] transition-colors cursor-pointer"
               >
@@ -319,6 +336,7 @@ export const AssistantWidget: React.FC = () => {
           <div className="px-3.5 sm:px-4 py-2 bg-[var(--bg-canvas)] border-b border-[var(--border-subtle)] flex flex-wrap items-center justify-between gap-x-3 gap-y-1.5 text-[11px] font-mono text-[var(--text-secondary)]">
             <button
               type="button"
+              aria-expanded={showPrivacyInfo}
               onClick={() => setShowPrivacyInfo((prev) => !prev)}
               className="inline-flex items-center gap-1 py-1 hover:text-[var(--accent-primary)] transition-colors cursor-pointer"
             >
@@ -329,6 +347,7 @@ export const AssistantWidget: React.FC = () => {
             <div className="flex items-center gap-3">
               <button
                 type="button"
+                aria-expanded={showBriefForm}
                 onClick={() => setShowBriefForm((prev) => !prev)}
                 className="py-1 text-[var(--accent-primary)] hover:underline cursor-pointer"
               >
@@ -397,18 +416,43 @@ export const AssistantWidget: React.FC = () => {
                 </div>
               ) : (
                 <form onSubmit={handlePreliminaryBriefSubmit} className="space-y-3" noValidate>
+                  {/* Invisible Honeypot Field for Bot Spam Prevention */}
+                  <div
+                    aria-hidden="true"
+                    className="sr-only pointer-events-none select-none"
+                  >
+                    <label htmlFor="brief-website-confirm">Leave this field blank</label>
+                    <input
+                      id="brief-website-confirm"
+                      name="websiteConfirm"
+                      type="text"
+                      tabIndex={-1}
+                      autoComplete="off"
+                      value={briefHoneypot}
+                      onChange={(e) => setBriefHoneypot(e.target.value)}
+                    />
+                  </div>
+
                   {briefError && (
-                    <div className="p-2.5 rounded bg-[var(--status-error-bg)] border border-[var(--status-error-border)] text-xs text-[var(--status-error-text)]">
+                    <div
+                      role="alert"
+                      className="p-2.5 rounded bg-[var(--status-error-bg)] border border-[var(--status-error-border)] text-xs text-[var(--status-error-text)]"
+                    >
                       {briefError}
                     </div>
                   )}
 
                   <div className="space-y-1">
-                    <label className="block font-mono text-[11px] text-[var(--text-primary)]">
+                    <label
+                      htmlFor="brief-name"
+                      className="block font-mono text-[11px] text-[var(--text-primary)]"
+                    >
                       Your Name *
                     </label>
                     <input
+                      id="brief-name"
                       type="text"
+                      required
                       value={briefName}
                       onChange={(e) => setBriefName(e.target.value)}
                       placeholder="Alex Morgan"
@@ -417,11 +461,16 @@ export const AssistantWidget: React.FC = () => {
                   </div>
 
                   <div className="space-y-1">
-                    <label className="block font-mono text-[11px] text-[var(--text-primary)]">
+                    <label
+                      htmlFor="brief-email"
+                      className="block font-mono text-[11px] text-[var(--text-primary)]"
+                    >
                       Email Address *
                     </label>
                     <input
+                      id="brief-email"
                       type="email"
+                      required
                       value={briefEmail}
                       onChange={(e) => setBriefEmail(e.target.value)}
                       placeholder="alex@company.com"
@@ -430,10 +479,14 @@ export const AssistantWidget: React.FC = () => {
                   </div>
 
                   <div className="space-y-1">
-                    <label className="block font-mono text-[11px] text-[var(--text-primary)]">
+                    <label
+                      htmlFor="brief-service"
+                      className="block font-mono text-[11px] text-[var(--text-primary)]"
+                    >
                       Service Interest
                     </label>
                     <select
+                      id="brief-service"
                       value={briefService}
                       onChange={(e) => setBriefService(e.target.value)}
                       className="ds-input text-xs py-2"
@@ -454,10 +507,14 @@ export const AssistantWidget: React.FC = () => {
                   </div>
 
                   <div className="space-y-1">
-                    <label className="block font-mono text-[11px] text-[var(--text-primary)]">
+                    <label
+                      htmlFor="brief-notes"
+                      className="block font-mono text-[11px] text-[var(--text-primary)]"
+                    >
                       Brief Project Notes
                     </label>
                     <textarea
+                      id="brief-notes"
                       rows={2}
                       value={briefNotes}
                       onChange={(e) => setBriefNotes(e.target.value)}

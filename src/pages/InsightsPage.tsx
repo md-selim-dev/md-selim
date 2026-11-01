@@ -9,6 +9,7 @@ import {
 } from '../content/insightsContent';
 import { ArticleLayout } from '../layouts/ArticleLayout';
 import { PageHeader } from '../layouts/PageHeader';
+import { scrollToTop } from '../scripts/router';
 import { applyPageSeo } from '../scripts/seoSchema';
 
 const TOPICS: InsightTopic[] = [
@@ -33,13 +34,26 @@ export const InsightsPage: React.FC = () => {
     getInitialArticleFromUrl()
   );
 
+  // Keep activeArticle synchronized when browser Back/Forward or route navigation changes ?article=
+  useEffect(() => {
+    const syncFromLocation = () => {
+      setActiveArticle(getInitialArticleFromUrl());
+    };
+    window.addEventListener('popstate', syncFromLocation);
+    window.addEventListener('mdselim:routechange', syncFromLocation);
+    return () => {
+      window.removeEventListener('popstate', syncFromLocation);
+      window.removeEventListener('mdselim:routechange', syncFromLocation);
+    };
+  }, []);
+
   // Sync URL query parameter and BlogPosting Schema.org JSON-LD when reading an article
   useEffect(() => {
     if (activeArticle) {
       const canonicalUrl = `${siteConfig.brand.siteUrl}/insights/?article=${activeArticle.slug}`;
       if (window.location.search !== `?article=${activeArticle.slug}`) {
-        window.history.replaceState(
-          { path: '/insights/' },
+        window.history.pushState(
+          { path: '/insights/', article: activeArticle.slug },
           '',
           `/insights/?article=${activeArticle.slug}`
         );
@@ -58,7 +72,7 @@ export const InsightsPage: React.FC = () => {
       });
     } else {
       if (window.location.search.includes('article=')) {
-        window.history.replaceState({ path: '/insights/' }, '', '/insights/');
+        window.history.pushState({ path: '/insights/' }, '', '/insights/');
       }
       applyPageSeo('/insights/');
     }
@@ -75,7 +89,7 @@ export const InsightsPage: React.FC = () => {
         article={activeArticle}
         onBack={() => {
           setActiveArticle(null);
-          window.scrollTo({ top: 0, behavior: 'smooth' });
+          scrollToTop();
         }}
       />
     );
@@ -110,6 +124,7 @@ export const InsightsPage: React.FC = () => {
                   type="button"
                   role="tab"
                   aria-selected={active}
+                  aria-controls="insights-articles-panel"
                   onClick={() =>
                     startTransition(() => {
                       setSelectedTopic(topic);
@@ -133,14 +148,18 @@ export const InsightsPage: React.FC = () => {
         </div>
 
         {/* Reusable Article Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div
+          id="insights-articles-panel"
+          role="tabpanel"
+          className="grid grid-cols-1 md:grid-cols-2 gap-6"
+        >
           {filteredArticles.map((article) => (
             <ArticleCard
               key={article.id}
               article={article}
               onSelectArticle={(item) => {
                 setActiveArticle(item);
-                window.scrollTo({ top: 0, behavior: 'smooth' });
+                scrollToTop();
               }}
             />
           ))}

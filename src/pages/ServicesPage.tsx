@@ -64,9 +64,11 @@ export const ServicesPage: React.FC = () => {
                 return (
                   <button
                     key={service.id}
+                    id={`service-tab-${service.id}`}
                     type="button"
                     role="tab"
                     aria-selected={isSelected}
+                    aria-controls="service-inspector-panel"
                     onClick={() =>
                       startTransition(() => {
                         setSelectedServiceId(service.id);
@@ -86,7 +88,12 @@ export const ServicesPage: React.FC = () => {
           </div>
 
           {/* Active Service Inspector Panel (Deliverables + Exclusions Side-by-Side) */}
-          <div className="ds-card p-5 sm:p-9 space-y-8">
+          <div
+            id="service-inspector-panel"
+            role="tabpanel"
+            aria-labelledby={`service-tab-${activeService.id}`}
+            className="ds-card p-5 sm:p-9 space-y-8"
+          >
             <div className="space-y-3 max-w-3xl">
               <p className="font-mono text-xs font-semibold text-[var(--accent-primary)]">
                 {activeService.index} · {activeService.categoryLabel}
@@ -158,10 +165,16 @@ export const ServicesPage: React.FC = () => {
             {servicesData.services.map((service) => {
               const isSelected = service.id === selectedServiceId;
               return (
-                <div
+                <button
                   key={service.id}
-                  onClick={() => setSelectedServiceId(service.id)}
-                  className={`p-5 sm:p-6 cursor-pointer flex flex-col justify-between space-y-5 ${
+                  type="button"
+                  aria-pressed={isSelected}
+                  onClick={() =>
+                    startTransition(() => {
+                      setSelectedServiceId(service.id);
+                    })
+                  }
+                  className={`p-5 sm:p-6 text-left cursor-pointer flex flex-col justify-between space-y-5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent-primary)] ${
                     isSelected ? 'ds-card-active' : 'ds-card-interactive'
                   }`}
                 >
@@ -177,7 +190,7 @@ export const ServicesPage: React.FC = () => {
                     </p>
                   </div>
 
-                  <div className="pt-4 border-t border-[var(--border-subtle)] flex items-center justify-between text-xs font-mono">
+                  <div className="w-full pt-4 border-t border-[var(--border-subtle)] flex items-center justify-between text-xs font-mono">
                     <span className="text-[var(--text-secondary)]">
                       {service.deliverables.length} deliverables
                     </span>
@@ -185,7 +198,7 @@ export const ServicesPage: React.FC = () => {
                       {isSelected ? 'Selected above' : 'Inspect scope'}
                     </span>
                   </div>
-                </div>
+                </button>
               );
             })}
           </div>
@@ -289,11 +302,13 @@ export const ServicesPage: React.FC = () => {
           <div className="lg:col-span-7 divide-y divide-[var(--border-subtle)] border-t border-b border-[var(--border-subtle)]">
             {servicesData.faqs.map((faq, index) => {
               const isOpen = openFaqIndex === index;
+              const answerId = `faq-answer-${index}`;
               return (
                 <div key={faq.question} className="py-4 sm:py-5">
                   <button
                     type="button"
                     aria-expanded={isOpen}
+                    aria-controls={answerId}
                     onClick={() => setOpenFaqIndex(isOpen ? -1 : index)}
                     className="w-full min-h-[44px] py-1 flex items-center justify-between gap-4 text-left cursor-pointer group"
                   >
@@ -305,7 +320,10 @@ export const ServicesPage: React.FC = () => {
                     </span>
                   </button>
                   {isOpen && (
-                    <p className="mt-2.5 text-sm text-[var(--text-secondary)] leading-relaxed sm:pr-6">
+                    <p
+                      id={answerId}
+                      className="mt-2.5 text-sm text-[var(--text-secondary)] leading-relaxed sm:pr-6"
+                    >
                       {faq.answer}
                     </p>
                   )}

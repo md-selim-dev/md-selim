@@ -12,6 +12,34 @@ export interface ArticleLayoutProps {
 }
 
 /**
+ * Safely parses inline Markdown (**bold** and `inline code`) into React elements
+ * without using dangerouslySetInnerHTML.
+ */
+function renderInlineMarkdown(text: string): React.ReactNode {
+  const tokens = text.split(/(\*\*[^*]+\*\*|`[^`]+`)/g);
+  return tokens.map((token, idx) => {
+    if (token.startsWith('**') && token.endsWith('**') && token.length > 4) {
+      return (
+        <strong key={idx} className="font-semibold text-[var(--text-primary)]">
+          {token.slice(2, -2)}
+        </strong>
+      );
+    }
+    if (token.startsWith('`') && token.endsWith('`') && token.length > 2) {
+      return (
+        <code
+          key={idx}
+          className="font-mono text-xs px-1.5 py-0.5 rounded bg-[var(--bg-interactive)] text-[var(--accent-primary)]"
+        >
+          {token.slice(1, -1)}
+        </code>
+      );
+    }
+    return <React.Fragment key={idx}>{token}</React.Fragment>;
+  });
+}
+
+/**
  * Reusable Article Layout for rendering parsed Markdown (.md) articles.
  */
 export const ArticleLayout: React.FC<ArticleLayoutProps> = ({ article, onBack }) => {
@@ -74,7 +102,7 @@ export const ArticleLayout: React.FC<ArticleLayoutProps> = ({ article, onBack })
                     className="flex items-start gap-2.5 text-sm text-[var(--text-primary)]"
                   >
                     <Check className="w-4 h-4 text-[var(--accent-primary)] shrink-0 mt-0.5" />
-                    <span>{point}</span>
+                    <span>{renderInlineMarkdown(point)}</span>
                   </li>
                 ))}
               </ul>
@@ -93,7 +121,7 @@ export const ArticleLayout: React.FC<ArticleLayoutProps> = ({ article, onBack })
                     key={idx}
                     className="text-sm sm:text-base text-[var(--text-secondary)] leading-relaxed"
                   >
-                    {paragraph}
+                    {renderInlineMarkdown(paragraph)}
                   </p>
                 ))}
                 {sec.bullets.length > 0 && (
@@ -101,10 +129,10 @@ export const ArticleLayout: React.FC<ArticleLayoutProps> = ({ article, onBack })
                     {sec.bullets.map((bullet) => (
                       <li
                         key={bullet}
-                        className="flex items-start gap-2.5 text-sm text-[var(--text-primary)]"
+                        className="flex items-start gap-2.5 text-sm text-[var(--text-secondary)]"
                       >
                         <Check className="w-4 h-4 text-[var(--accent-primary)] shrink-0 mt-0.5" />
-                        <span>{bullet}</span>
+                        <span>{renderInlineMarkdown(bullet)}</span>
                       </li>
                     ))}
                   </ul>

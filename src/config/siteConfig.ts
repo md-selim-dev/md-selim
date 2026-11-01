@@ -57,6 +57,13 @@ export interface SiteConfig {
      */
     googleSiteVerification: string;
   };
+  analytics: {
+    /**
+     * Optional Cloudflare Web Analytics beacon token (privacy-first, cookie-free).
+     * Populated via VITE_CF_BEACON_TOKEN environment variable when not using Cloudflare Pages auto-injection.
+     */
+    cfBeaconToken: string;
+  };
   servicesSummary: {
     core: {
       label: string;
@@ -99,6 +106,14 @@ const envGoogleVerification =
     ? import.meta.env.VITE_GOOGLE_SITE_VERIFICATION.trim()
     : 'OmCZTyfne7XN_LTu8t-GoXj4lxtHNCGRuG5nDn8tEnU';
 
+const envCfBeaconToken =
+  typeof import.meta !== 'undefined' &&
+  import.meta.env &&
+  typeof import.meta.env.VITE_CF_BEACON_TOKEN === 'string' &&
+  import.meta.env.VITE_CF_BEACON_TOKEN.trim().length > 0
+    ? import.meta.env.VITE_CF_BEACON_TOKEN.trim()
+    : '';
+
 export const siteConfig: SiteConfig = {
   brand: {
     name: 'MD SELIM',
@@ -119,6 +134,9 @@ export const siteConfig: SiteConfig = {
   },
   verification: {
     googleSiteVerification: envGoogleVerification,
+  },
+  analytics: {
+    cfBeaconToken: envCfBeaconToken,
   },
   servicesSummary: {
     core: {

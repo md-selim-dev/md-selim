@@ -74,9 +74,11 @@ export const ExplorationHub: React.FC = () => {
           return (
             <button
               key={tab.id}
+              id={`exploration-tab-${tab.id}`}
               type="button"
               role="tab"
               aria-selected={isSelected}
+              aria-controls="exploration-active-tabpanel"
               onClick={() => {
                 startTransition(() => {
                   setActiveTab(tab.id);
@@ -101,7 +103,12 @@ export const ExplorationHub: React.FC = () => {
       </div>
 
       {/* Active Experience Panel */}
-      <div role="tabpanel" className="pt-2 min-h-[420px]">
+      <div
+        id="exploration-active-tabpanel"
+        role="tabpanel"
+        aria-labelledby={`exploration-tab-${activeTab}`}
+        className="pt-2 min-h-[420px]"
+      >
         {activeTab === 'clarity-checker' && <WebsiteClarityChecker />}
         {activeTab === 'explore-approach' && <ExploreMyApproach />}
         {activeTab === 'improve-first' && <SmallBusinessImprovementExplorer />}

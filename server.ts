@@ -179,6 +179,17 @@ async function startServer() {
       "default-src 'self' https: data: blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https: ws: wss:; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'"
     );
 
+    // Canonical host enforcement for production requests arriving on www.mdselim.com or *.pages.dev
+    const hostHeader = (req.headers.host || '').split(':')[0].toLowerCase();
+    if (
+      hostHeader === 'www.mdselim.com' ||
+      hostHeader === 'md-selim.pages.dev' ||
+      hostHeader.endsWith('.md-selim.pages.dev')
+    ) {
+      res.redirect(301, `https://mdselim.com${req.originalUrl || req.url}`);
+      return;
+    }
+
     if (req.path.startsWith('/api/')) {
       res.setHeader(
         'Cache-Control',
@@ -349,8 +360,43 @@ async function startServer() {
     }
   });
 
+  // Optional production webhook forwarder for validated inquiries (CONTACT_WEBHOOK_URL)
+  const forwardInquiryToWebhook = async (
+    type: 'contact-form' | 'assistant-preliminary-brief',
+    payload: Record<string, unknown>
+  ): Promise<boolean> => {
+    const webhookUrl = (process.env.CONTACT_WEBHOOK_URL || '').trim();
+    if (!webhookUrl || !/^https:\/\//i.test(webhookUrl)) {
+      return false;
+    }
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 5000);
+    try {
+      const response = await fetch(webhookUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+          'User-Agent': 'mdselim.com-contact-forwarder/1.0',
+        },
+        body: JSON.stringify({
+          source: 'https://mdselim.com',
+          type,
+          submittedAt: new Date().toISOString(),
+          ...payload,
+        }),
+        signal: controller.signal,
+      });
+      return response.ok;
+    } catch {
+      return false;
+    } finally {
+      clearTimeout(timeout);
+    }
+  };
+
   // POST /api/chat/preliminary-brief — Validates preliminary project info shared with consent
-  app.post('/api/chat/preliminary-brief', (req: Request, res: Response) => {
+  app.post('/api/chat/preliminary-brief', async (req: Request, res: Response) => {
     if (!validatePostSecurity(req, res)) return;
 
     const clientIp = getClientIp(req);
@@ -394,19 +440,24 @@ async function startServer() {
       return;
     }
 
+    const summary = {
+      name,
+      email,
+      serviceNeed: serviceNeed || 'Webflow Website / SEO Inquiry',
+      notes,
+    };
+
+    const webhookForwarded = await forwardInquiryToWebhook('assistant-preliminary-brief', summary);
+
     res.json({
       ok: true,
-      summary: {
-        name,
-        email,
-        serviceNeed: serviceNeed || 'Webflow Website / SEO Inquiry',
-        notes,
-      },
+      webhookForwarded,
+      summary,
     });
   });
 
   // POST /api/contact — Hardened server-side Contact Inquiry validation & spam protection
-  app.post('/api/contact', (req: Request, res: Response) => {
+  app.post('/api/contact', async (req: Request, res: Response) => {
     if (!validatePostSecurity(req, res)) return;
 
     const clientIp = getClientIp(req);
@@ -501,17 +552,22 @@ async function startServer() {
       return;
     }
 
+    const sanitizedBrief = {
+      fullName,
+      email,
+      businessName,
+      websiteUrl: normalizedWebsiteUrl,
+      serviceInterest,
+      projectTimeline,
+      projectDetails,
+    };
+
+    const webhookForwarded = await forwardInquiryToWebhook('contact-form', sanitizedBrief);
+
     res.json({
       ok: true,
-      sanitizedBrief: {
-        fullName,
-        email,
-        businessName,
-        websiteUrl: normalizedWebsiteUrl,
-        serviceInterest,
-        projectTimeline,
-        projectDetails,
-      },
+      webhookForwarded,
+      sanitizedBrief,
     });
   });
 

@@ -50,19 +50,12 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
         </p>
       </div>
 
-      <div className="pt-4 border-t border-[var(--border-subtle)] flex items-center justify-between text-xs font-mono font-semibold text-[var(--text-primary)] group-hover:text-[var(--accent-primary)]">
-        <a
-          href={articleHref}
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            onSelectArticle(article);
-          }}
-          className="inline-flex items-center justify-between w-full"
-        >
-          <span>Read Article: {article.topic}</span>
-          <ArrowRight className="w-4 h-4 shrink-0" />
-        </a>
+      <div
+        aria-hidden="true"
+        className="pt-4 border-t border-[var(--border-subtle)] flex items-center justify-between text-xs font-mono font-semibold text-[var(--text-primary)] group-hover:text-[var(--accent-primary)]"
+      >
+        <span>Read Article: {article.topic}</span>
+        <ArrowRight className="w-4 h-4 shrink-0" />
       </div>
     </article>
   );
