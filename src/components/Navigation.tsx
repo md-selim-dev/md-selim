@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavItem, RoutePath } from '../config/siteConfig';
-import { navigateTo } from '../scripts/router';
+import { navigateTo, preloadRoute } from '../scripts/router';
 
 export interface NavigationProps {
   items: NavItem[];
@@ -25,6 +25,8 @@ export const Navigation: React.FC<NavigationProps> = ({
               key={item.path}
               href={item.path}
               aria-current={isActive ? 'page' : undefined}
+              onMouseEnter={() => preloadRoute(item.path)}
+              onFocus={() => preloadRoute(item.path)}
               onClick={(e) => {
                 e.preventDefault();
                 navigateTo(item.path);
@@ -53,6 +55,8 @@ export const Navigation: React.FC<NavigationProps> = ({
             key={item.path}
             href={item.path}
             aria-current={isActive ? 'page' : undefined}
+            onMouseEnter={() => preloadRoute(item.path)}
+            onFocus={() => preloadRoute(item.path)}
             onClick={(e) => {
               e.preventDefault();
               navigateTo(item.path);

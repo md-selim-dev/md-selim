@@ -1,13 +1,18 @@
 import 'dotenv/config';
 import express, { NextFunction, Request, Response } from 'express';
+import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { RoutePath, siteConfig } from './src/config/siteConfig.js';
 import {
   buildSafeFallbackReply,
   CHATBOT_LIMITS,
   CHATBOT_SYSTEM_INSTRUCTION,
   inferSuggestedRoutes,
 } from './src/data/chatbotKnowledge.js';
+import { normalizeRoutePath } from './src/scripts/router.js';
+import { escapeHtmlEntities, safeJsonLdStringify } from './src/scripts/securityUtils.js';
+import { buildRouteStructuredData } from './src/scripts/seoSchema.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -178,6 +183,21 @@ async function startServer() {
       res.setHeader(
         'Cache-Control',
         'no-store, no-cache, must-revalidate, private'
+      );
+    } else if (req.path.startsWith('/assets/')) {
+      res.setHeader(
+        'Cache-Control',
+        'public, max-age=31536000, immutable'
+      );
+    } else if (
+      req.path === '/favicon.svg' ||
+      req.path === '/og-card.svg' ||
+      req.path === '/robots.txt' ||
+      req.path === '/sitemap.xml'
+    ) {
+      res.setHeader(
+        'Cache-Control',
+        'public, max-age=86400, stale-while-revalidate=604800'
       );
     }
     next();
@@ -495,7 +515,7 @@ async function startServer() {
     });
   });
 
-  // Mount Vite dev server in development or static dist in production
+  // Mount Vite dev server in development or static dist with route-aware pre-rendered HTML in production
   if (process.env.NODE_ENV !== 'production') {
     let viteMiddleware: express.RequestHandler | null = null;
     const vitePromise = import('vite')
@@ -520,9 +540,94 @@ async function startServer() {
     });
   } else {
     const distPath = path.join(__dirname, 'dist');
-    app.use(express.static(distPath));
-    app.get('*', (_req: Request, res: Response) => {
-      res.sendFile(path.join(distPath, 'index.html'));
+    const templateHtml = fs.existsSync(path.join(distPath, 'index.html'))
+      ? fs.readFileSync(path.join(distPath, 'index.html'), 'utf-8')
+      : '';
+    const staticRouteHtmlCache = new Map<RoutePath, string>();
+
+    const getPreRenderedRouteHtml = (route: RoutePath): string => {
+      const cached = staticRouteHtmlCache.get(route);
+      if (cached) return cached;
+
+      const meta = siteConfig.seo[route] ?? siteConfig.seo['/'];
+      const canonicalUrl = `${siteConfig.brand.siteUrl}${meta.canonicalPath}`;
+      const escapedTitle = escapeHtmlEntities(meta.title);
+      const escapedDesc = escapeHtmlEntities(meta.description);
+      const jsonLd = safeJsonLdStringify(
+        buildRouteStructuredData(route, { canonicalUrl })
+      );
+
+      const rendered = templateHtml
+        .replace(/<title>[\s\S]*?<\/title>/, `<title>${escapedTitle}</title>`)
+        .replace(
+          /<meta\s+name="description"\s+content="[^"]*"\s*\/>/,
+          `<meta name="description" content="${escapedDesc}" />`
+        )
+        .replace(
+          /<meta\s+name="robots"\s+content="[^"]*"\s*\/>/,
+          `<meta name="robots" content="${meta.robots}" />`
+        )
+        .replace(
+          /<link\s+rel="canonical"\s+href="[^"]*"\s*\/>/,
+          `<link rel="canonical" href="${canonicalUrl}" />`
+        )
+        .replace(
+          /<meta\s+property="og:title"[\s\S]*?\/>/,
+          `<meta property="og:title" content="${escapedTitle}" />`
+        )
+        .replace(
+          /<meta\s+property="og:description"[\s\S]*?\/>/,
+          `<meta property="og:description" content="${escapedDesc}" />`
+        )
+        .replace(
+          /<meta\s+property="og:url"\s+content="[^"]*"\s*\/>/,
+          `<meta property="og:url" content="${canonicalUrl}" />`
+        )
+        .replace(
+          /<meta\s+name="twitter:title"[\s\S]*?\/>/,
+          `<meta name="twitter:title" content="${escapedTitle}" />`
+        )
+        .replace(
+          /<meta\s+name="twitter:description"[\s\S]*?\/>/,
+          `<meta name="twitter:description" content="${escapedDesc}" />`
+        )
+        .replace(
+          /<script id="mdselim-jsonld" type="application\/ld\+json">[\s\S]*?<\/script>/,
+          `<script id="mdselim-jsonld" type="application/ld+json">${jsonLd}</script>`
+        );
+
+      staticRouteHtmlCache.set(route, rendered);
+      return rendered;
+    };
+
+    app.use(
+      express.static(distPath, {
+        index: false,
+        etag: true,
+        maxAge: '1d',
+        setHeaders(res, filePath) {
+          if (filePath.includes(`${path.sep}assets${path.sep}`)) {
+            res.setHeader(
+              'Cache-Control',
+              'public, max-age=31536000, immutable'
+            );
+          }
+        },
+      })
+    );
+
+    app.get('*', (req: Request, res: Response) => {
+      const route = normalizeRoutePath(req.path);
+      if (route === '/404/' && req.path !== '/404/' && req.path !== '/404.html') {
+        res.status(404);
+      }
+      res.setHeader('Cache-Control', 'public, max-age=0, must-revalidate');
+      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      if (templateHtml) {
+        res.send(getPreRenderedRouteHtml(route));
+      } else {
+        res.sendFile(path.join(distPath, 'index.html'));
+      }
     });
   }
 

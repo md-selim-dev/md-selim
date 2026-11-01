@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { startTransition, useState } from 'react';
 import { ArrowRight, Check, Minus } from 'lucide-react';
 import { Button } from '../components/Button';
 import { SectionContainer } from '../components/SectionContainer';
@@ -67,7 +67,11 @@ export const ServicesPage: React.FC = () => {
                     type="button"
                     role="tab"
                     aria-selected={isSelected}
-                    onClick={() => setSelectedServiceId(service.id)}
+                    onClick={() =>
+                      startTransition(() => {
+                        setSelectedServiceId(service.id);
+                      })
+                    }
                     className={`min-h-[40px] px-3 py-2 text-xs font-mono font-medium rounded-md transition-colors text-left sm:whitespace-nowrap cursor-pointer ${
                       isSelected
                         ? 'bg-[var(--bg-interactive)] text-[var(--accent-primary)] border border-[var(--border-interactive)] font-semibold'

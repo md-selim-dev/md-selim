@@ -21,7 +21,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
   actions,
 }) => {
   return (
-    <SectionContainer surface="canvas" spacing="compact" borderBottom>
+    <SectionContainer surface="canvas" spacing="compact" borderBottom priority>
       <div className="max-w-3xl space-y-5">
         {breadcrumbs && breadcrumbs.length > 0 && (
           <Breadcrumbs items={breadcrumbs} />

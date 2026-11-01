@@ -160,12 +160,104 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
+      rel="preload"
+      as="style"
       href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
+      onload="this.onload=null;this.rel='stylesheet'"
     />
+    <noscript>
+      <link
+        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+        rel="stylesheet"
+      />
+    </noscript>
+    <style>
+      @font-face {
+        font-family: "Plus Jakarta Sans Fallback";
+        src: local("Inter"), local("Segoe UI"), local("Roboto"), local("Helvetica Neue"), local("Arial");
+        size-adjust: 104.5%;
+        ascent-override: 96%;
+        descent-override: 24%;
+        line-gap-override: 0%;
+      }
+      @font-face {
+        font-family: "JetBrains Mono Fallback";
+        src: local("SFMono-Regular"), local("Menlo"), local("Consolas"), local("Liberation Mono");
+        size-adjust: 100%;
+        ascent-override: 95%;
+        descent-override: 25%;
+        line-gap-override: 0%;
+      }
+      :root {
+        --bg-canvas: #061411;
+        --bg-elevated: #0B241F;
+        --bg-interactive: #14332D;
+        --accent-primary: #10B981;
+        --accent-on-primary: #04120E;
+        --text-primary: #F0FDF8;
+        --text-secondary: #8DAAA2;
+        --border-subtle: rgba(141, 170, 162, 0.14);
+      }
+      html, body {
+        margin: 0;
+        background-color: #061411;
+        color: #F0FDF8;
+        font-family: "Plus Jakarta Sans", "Plus Jakarta Sans Fallback", -apple-system, BlinkMacSystemFont, sans-serif;
+        -webkit-text-size-adjust: 100%;
+      }
+      .ssr-shell-header {
+        height: 4rem;
+        border-bottom: 1px solid rgba(141, 170, 162, 0.14);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1.25rem;
+      }
+      .ssr-shell-hero {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 3rem 1.25rem;
+      }
+      .ssr-shell-kicker {
+        font-family: "JetBrains Mono", "JetBrains Mono Fallback", monospace;
+        font-size: 0.75rem;
+        color: #10B981;
+        margin: 0 0 1rem 0;
+      }
+      .ssr-shell-h1 {
+        font-size: clamp(1.85rem, 3.8vw + 0.5rem, 3.75rem);
+        font-weight: 700;
+        line-height: 1.1;
+        letter-spacing: -0.02em;
+        color: #F0FDF8;
+        margin: 0 0 1.25rem 0;
+        max-width: 42rem;
+      }
+      .ssr-shell-lead {
+        font-size: 1.0625rem;
+        line-height: 1.65;
+        color: #8DAAA2;
+        margin: 0;
+        max-width: 38rem;
+      }
+    </style>
   </head>
   <body class="bg-[var(--bg-canvas)] text-[var(--text-primary)] antialiased selection:bg-[var(--accent-primary)] selection:text-[#061411]">
-    <div id="root"></div>
+    <div id="root">
+      <div class="ssr-shell-header" aria-hidden="true">
+        <span style="font-weight:700;letter-spacing:-0.02em;">MD SELIM</span>
+        <span style="font-size:0.75rem;color:#8DAAA2;font-family:monospace;">mdselim.com</span>
+      </div>
+      <div class="ssr-shell-hero">
+        <p class="ssr-shell-kicker">MD SELIM · mdselim.com</p>
+        <h1 class="ssr-shell-h1">Websites built for clarity, credibility, and growth.</h1>
+        <p class="ssr-shell-lead">
+          I help small service businesses build professional websites with a strong user experience and an SEO-ready foundation.
+        </p>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

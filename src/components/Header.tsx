@@ -5,6 +5,7 @@ import { navigateTo } from '../scripts/router';
 import { themeTokens } from '../styles/themeTokens';
 import { Button } from './Button';
 import { Navigation } from './Navigation';
+import { ResponsiveImage } from './ResponsiveImage';
 
 export interface HeaderProps {
   currentRoute: RoutePath;
@@ -57,10 +58,12 @@ export const Header: React.FC<HeaderProps> = ({ currentRoute }) => {
           className="inline-flex items-center min-h-[44px] text-base sm:text-lg font-bold tracking-tight text-[var(--text-primary)] whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent-primary)]"
         >
           {siteConfig.brand.logoUrl ? (
-            <img
+            <ResponsiveImage
               src={siteConfig.brand.logoUrl}
               alt={siteConfig.brand.logoAlt}
-              referrerPolicy="no-referrer"
+              width={140}
+              height={28}
+              priority
               className="h-7 w-auto object-contain"
             />
           ) : (

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { startTransition, useEffect, useState } from 'react';
 import { ProjectCard } from '../components/ProjectCard';
 import { SectionContainer } from '../components/SectionContainer';
 import { siteConfig } from '../config/siteConfig';
@@ -108,7 +108,11 @@ export const WorkPage: React.FC = () => {
                   type="button"
                   role="tab"
                   aria-selected={active}
-                  onClick={() => setSelectedClassification(classification)}
+                  onClick={() =>
+                    startTransition(() => {
+                      setSelectedClassification(classification);
+                    })
+                  }
                   className={`min-h-[40px] px-3.5 py-2 text-xs font-mono font-medium rounded-md transition-colors sm:whitespace-nowrap cursor-pointer ${
                     active
                       ? 'bg-[var(--bg-interactive)] text-[var(--accent-primary)] border border-[var(--border-interactive)] font-semibold'

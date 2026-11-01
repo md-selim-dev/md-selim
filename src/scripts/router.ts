@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { startTransition, useEffect, useState } from 'react';
 import { RoutePath } from '../config/siteConfig';
 import { applyPageSeo } from './seoSchema';
 
@@ -11,6 +11,32 @@ const PRIMARY_ROUTES: RoutePath[] = [
   '/contact/',
   '/404/',
 ];
+
+type RoutePreloaderMap = Partial<Record<RoutePath, () => Promise<unknown>>>;
+let routePreloaders: RoutePreloaderMap = {};
+const preloadedRoutes = new Set<RoutePath>();
+
+/**
+ * Registers dynamic import preloaders for lazy-loaded route bundles.
+ */
+export function registerRoutePreloaders(preloaders: RoutePreloaderMap): void {
+  routePreloaders = preloaders;
+}
+
+/**
+ * Preloads the JavaScript chunk for a target route on pointer hover or keyboard focus.
+ */
+export function preloadRoute(rawPath: RoutePath | string): void {
+  const normalized = normalizeRoutePath(rawPath);
+  if (preloadedRoutes.has(normalized)) return;
+  const loader = routePreloaders[normalized];
+  if (loader) {
+    preloadedRoutes.add(normalized);
+    loader().catch(() => {
+      preloadedRoutes.delete(normalized);
+    });
+  }
+}
 
 /**
  * Normalizes any pathname into one of the six canonical routes, or '/404/' for unknown paths.
@@ -40,6 +66,8 @@ export function navigateTo(
   queryParams?: Record<string, string | null>
 ): void {
   const normalized = normalizeRoutePath(path);
+  preloadRoute(normalized);
+
   let targetUrl: string = normalized;
 
   if (queryParams) {
@@ -84,16 +112,22 @@ export function useRouter() {
 
   useEffect(() => {
     const handlePopState = () => {
-      setCurrentRoute(normalizeRoutePath(window.location.pathname));
+      const nextRoute = normalizeRoutePath(window.location.pathname);
+      preloadRoute(nextRoute);
+      startTransition(() => {
+        setCurrentRoute(nextRoute);
+      });
     };
 
     const handleCustomRoute = (event: Event) => {
       const customEvent = event as CustomEvent<RoutePath>;
-      if (customEvent.detail) {
-        setCurrentRoute(normalizeRoutePath(customEvent.detail));
-      } else {
-        setCurrentRoute(normalizeRoutePath(window.location.pathname));
-      }
+      const nextRoute = customEvent.detail
+        ? normalizeRoutePath(customEvent.detail)
+        : normalizeRoutePath(window.location.pathname);
+      preloadRoute(nextRoute);
+      startTransition(() => {
+        setCurrentRoute(nextRoute);
+      });
     };
 
     window.addEventListener('popstate', handlePopState);

@@ -1,6 +1,6 @@
 import React from 'react';
 import { RoutePath } from '../config/siteConfig';
-import { navigateTo } from '../scripts/router';
+import { navigateTo, preloadRoute } from '../scripts/router';
 
 export interface ButtonProps {
   children: React.ReactNode;
@@ -56,6 +56,8 @@ export const Button: React.FC<ButtonProps> = ({
       <a
         href={to}
         aria-label={ariaLabel}
+        onMouseEnter={() => preloadRoute(to)}
+        onFocus={() => preloadRoute(to)}
         onClick={(e) => {
           e.preventDefault();
           if (onClick) onClick();

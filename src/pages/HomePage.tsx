@@ -20,7 +20,7 @@ export const HomePage: React.FC = () => {
   return (
     <div>
       {/* 1. HERO SECTION */}
-      <SectionContainer surface="canvas" spacing="default" borderBottom>
+      <SectionContainer surface="canvas" spacing="default" borderBottom priority>
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-stretch">
           <div className="lg:col-span-7 flex flex-col justify-between space-y-8">
             <div className="space-y-5">

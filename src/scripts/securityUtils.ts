@@ -128,3 +128,15 @@ export function safeJsonLdStringify(data: unknown): string {
     .replace(/>/g, '\\u003e')
     .replace(/&/g, '\\u0026');
 }
+
+/**
+ * Escapes HTML special characters (&, <, >, ", ') for safe insertion into HTML tags and attributes.
+ */
+export function escapeHtmlEntities(raw: string): string {
+  return raw
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}

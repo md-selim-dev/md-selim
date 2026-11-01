@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  --font-sans: "Plus Jakarta Sans", "Plus Jakarta Sans Fallback", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: "JetBrains Mono", "JetBrains Mono Fallback", ui-monospace, SFMono-Regular, monospace;
 }
 
 :root {
@@ -169,6 +169,7 @@
       linear-gradient(to bottom, rgba(16, 185, 129, 0.045) 1px, transparent 1px);
     background-size: 48px 48px;
     mask-image: radial-gradient(ellipse 85% 75% at 50% 35%, #000 35%, transparent 100%);
+    contain: layout style paint;
     will-change: transform;
     animation: ambientGridDrift 28s ease-in-out infinite;
   }
@@ -179,6 +180,7 @@
     background-image: radial-gradient(rgba(16, 185, 129, 0.14) 1px, transparent 1px);
     background-size: 24px 24px;
     mask-image: radial-gradient(ellipse 70% 65% at 50% 25%, #000 20%, transparent 90%);
+    contain: layout style paint;
     will-change: transform, opacity;
     animation: ambientDotsPulse 18s ease-in-out infinite;
   }
@@ -186,6 +188,7 @@
   .ds-ambient-vignette {
     position: absolute;
     inset: 0;
+    contain: strict;
     background: radial-gradient(circle at 50% 0%, rgba(16, 185, 129, 0.065), transparent 60%);
   }
 
@@ -206,6 +209,7 @@
     );
     opacity: 0;
     pointer-events: none;
+    contain: layout style paint;
     will-change: transform, opacity;
     transition: opacity 350ms ease;
   }
@@ -281,6 +285,12 @@
     .ds-section-compact {
       padding-block: var(--space-16);
     }
+  }
+
+  /* Phase 10: Offscreen Section Rendering Optimization */
+  .ds-cv-auto {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 520px;
   }
 
   /* ==========================================================================

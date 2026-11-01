@@ -1,6 +1,6 @@
 import React from 'react';
 import { RoutePath, siteConfig } from '../config/siteConfig';
-import { navigateTo } from '../scripts/router';
+import { navigateTo, preloadRoute } from '../scripts/router';
 import { themeTokens } from '../styles/themeTokens';
 
 export const Footer: React.FC = () => {
@@ -48,6 +48,8 @@ export const Footer: React.FC = () => {
                 <li key={item.path}>
                   <a
                     href={item.path}
+                    onMouseEnter={() => preloadRoute(item.path)}
+                    onFocus={() => preloadRoute(item.path)}
                     onClick={(e) => {
                       e.preventDefault();
                       navigateTo(item.path);

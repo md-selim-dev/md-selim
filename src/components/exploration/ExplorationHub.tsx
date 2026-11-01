@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { startTransition, useState } from 'react';
 import { themeTokens } from '../../styles/themeTokens';
 import { ExploreAndDiscover } from './ExploreAndDiscover';
 import { ExploreMyApproach } from './ExploreMyApproach';
@@ -77,7 +77,11 @@ export const ExplorationHub: React.FC = () => {
               type="button"
               role="tab"
               aria-selected={isSelected}
-              onClick={() => setActiveTab(tab.id)}
+              onClick={() => {
+                startTransition(() => {
+                  setActiveTab(tab.id);
+                });
+              }}
               className={`p-4 rounded-xl text-left transition-all cursor-pointer flex flex-col justify-between space-y-2 ${
                 isSelected ? 'ds-card-active' : 'ds-card-interactive'
               }`}
@@ -97,7 +101,7 @@ export const ExplorationHub: React.FC = () => {
       </div>
 
       {/* Active Experience Panel */}
-      <div role="tabpanel" className="pt-2">
+      <div role="tabpanel" className="pt-2 min-h-[420px]">
         {activeTab === 'clarity-checker' && <WebsiteClarityChecker />}
         {activeTab === 'explore-approach' && <ExploreMyApproach />}
         {activeTab === 'improve-first' && <SmallBusinessImprovementExplorer />}

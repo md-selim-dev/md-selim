@@ -38,6 +38,10 @@ export default function App() {
     }
   };
 
-  return <BaseLayout currentRoute={currentRoute}>{renderPage()}</BaseLayout>;
+  return (
+    <BaseLayout currentRoute={currentRoute}>
+      {renderPage()}
+    </BaseLayout>
+  );
 }
 

@@ -8,6 +8,7 @@ export interface SectionContainerProps {
   spacing?: 'default' | 'compact' | 'none';
   borderTop?: boolean;
   borderBottom?: boolean;
+  priority?: boolean;
   className?: string;
   containerClassName?: string;
   as?: 'section' | 'div' | 'article';
@@ -20,6 +21,7 @@ export const SectionContainer: React.FC<SectionContainerProps> = ({
   spacing = 'default',
   borderTop = false,
   borderBottom = false,
+  priority = false,
   className = '',
   containerClassName = '',
   as: Tag = 'section',
@@ -39,6 +41,7 @@ export const SectionContainer: React.FC<SectionContainerProps> = ({
   const borderClasses = [
     borderTop ? 'border-t border-[var(--border-subtle)]' : '',
     borderBottom ? 'border-b border-[var(--border-subtle)]' : '',
+    !priority ? 'ds-cv-auto' : '',
   ]
     .filter(Boolean)
     .join(' ');
@@ -46,7 +49,7 @@ export const SectionContainer: React.FC<SectionContainerProps> = ({
   return (
     <Tag
       id={id}
-      data-reveal="section"
+      data-reveal={priority ? undefined : 'section'}
       className={`relative ${surfaceMap[surface]} ${spacingMap[spacing]} ${borderClasses} ${className}`.trim()}
     >
       <div className={`${themeTokens.layout.container} ${containerClassName}`.trim()}>
