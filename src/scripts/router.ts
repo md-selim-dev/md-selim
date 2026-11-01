@@ -135,6 +135,14 @@ export function useRouter() {
   );
 
   useEffect(() => {
+    if (
+      typeof window !== 'undefined' &&
+      currentRoute !== '/404/' &&
+      window.location.pathname !== currentRoute
+    ) {
+      const normalizedUrl = `${currentRoute}${window.location.search}${window.location.hash}`;
+      window.history.replaceState({ path: currentRoute }, '', normalizedUrl);
+    }
     syncRouteMetadata(currentRoute);
   }, [currentRoute]);
 

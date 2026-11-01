@@ -571,25 +571,123 @@ async function startServer() {
     });
   });
 
+  // Unknown /api/* routes must return JSON 404 and never fall through to frontend HTML
+  app.all('/api/*', (_req: Request, res: Response) => {
+    res.status(404).json({
+      error: 'API endpoint not found.',
+    });
+  });
+
+  const STATIC_ASSET_EXT_REGEX =
+    /\.(?:js|mjs|cjs|css|svg|png|jpg|jpeg|webp|gif|ico|woff|woff2|ttf|eot|otf|xml|txt|json|map|webmanifest|pdf|zip)$/i;
+
+  const renderHtmlTemplateForRoute = (rawTemplate: string, route: RoutePath): string => {
+    const meta = siteConfig.seo[route] ?? siteConfig.seo['/'];
+    const canonicalUrl = `${siteConfig.brand.siteUrl}${meta.canonicalPath}`;
+    const escapedTitle = escapeHtmlEntities(meta.title);
+    const escapedDesc = escapeHtmlEntities(meta.description);
+    const jsonLd = safeJsonLdStringify(
+      buildRouteStructuredData(route, { canonicalUrl })
+    );
+
+    return rawTemplate
+      .replace(/<title>[\s\S]*?<\/title>/i, `<title>${escapedTitle}</title>`)
+      .replace(
+        /<meta\s+name="description"\s+content="[^"]*"\s*\/?>/i,
+        `<meta name="description" content="${escapedDesc}" />`
+      )
+      .replace(
+        /<meta\s+name="robots"\s+content="[^"]*"\s*\/?>/i,
+        `<meta name="robots" content="${meta.robots}" />`
+      )
+      .replace(
+        /<link\s+rel="canonical"\s+href="[^"]*"\s*\/?>/i,
+        `<link rel="canonical" href="${canonicalUrl}" />`
+      )
+      .replace(
+        /<meta\s+property="og:type"\s+content="[^"]*"\s*\/?>/i,
+        `<meta property="og:type" content="${meta.ogType}" />`
+      )
+      .replace(
+        /<meta\s+property="og:title"[\s\S]*?\/?>/i,
+        `<meta property="og:title" content="${escapedTitle}" />`
+      )
+      .replace(
+        /<meta\s+property="og:description"[\s\S]*?\/?>/i,
+        `<meta property="og:description" content="${escapedDesc}" />`
+      )
+      .replace(
+        /<meta\s+property="og:url"\s+content="[^"]*"\s*\/?>/i,
+        `<meta property="og:url" content="${canonicalUrl}" />`
+      )
+      .replace(
+        /<meta\s+name="twitter:title"[\s\S]*?\/?>/i,
+        `<meta name="twitter:title" content="${escapedTitle}" />`
+      )
+      .replace(
+        /<meta\s+name="twitter:description"[\s\S]*?\/?>/i,
+        `<meta name="twitter:description" content="${escapedDesc}" />`
+      )
+      .replace(
+        /<script\s+id="(?:mdselim-jsonld|schema-org-graph)"\s+type="application\/ld\+json">[\s\S]*?<\/script>/i,
+        `<script id="mdselim-jsonld" type="application/ld+json">${jsonLd}</script>`
+      );
+  };
+
   // Mount Vite dev server in development or static dist with route-aware pre-rendered HTML in production
   if (process.env.NODE_ENV !== 'production') {
-    let viteMiddleware: express.RequestHandler | null = null;
+    const devIndexHtmlPath = path.join(__dirname, 'index.html');
+    let viteServerInstance: Awaited<ReturnType<typeof import('vite')['createServer']>> | null = null;
     const vitePromise = import('vite')
       .then(({ createServer: createViteServer }) =>
         createViteServer({
           server: { middlewareMode: true },
-          appType: 'spa',
+          appType: 'custom',
         })
       )
       .then((vite) => {
-        viteMiddleware = vite.middlewares;
-        return vite.middlewares;
+        viteServerInstance = vite;
+        return vite;
       });
 
     app.use(async (req: Request, res: Response, next: NextFunction) => {
       try {
-        const mw = viteMiddleware || (await vitePromise);
-        mw(req, res, next);
+        const vite = viteServerInstance || (await vitePromise);
+        const reqPath = req.path || '/';
+
+        // Let Vite handle module/source/HMR/public asset requests directly
+        const isViteInternalOrAsset =
+          reqPath.startsWith('/@') ||
+          reqPath.startsWith('/src/') ||
+          reqPath.startsWith('/node_modules/') ||
+          (STATIC_ASSET_EXT_REGEX.test(reqPath) &&
+            reqPath !== '/index.html' &&
+            reqPath !== '/404.html');
+
+        if (isViteInternalOrAsset || (req.method !== 'GET' && req.method !== 'HEAD')) {
+          vite.middlewares(req, res, (err?: unknown) => {
+            if (err) {
+              next(err);
+              return;
+            }
+            if (!res.headersSent) {
+              res.status(404).type('text/plain').send('Not Found');
+            }
+          });
+          return;
+        }
+
+        const route = normalizeRoutePath(reqPath);
+        const statusCode = route === '/404/' ? 404 : 200;
+        const rawTemplate = fs.readFileSync(devIndexHtmlPath, 'utf-8');
+        const routeHtml = renderHtmlTemplateForRoute(rawTemplate, route);
+        const transformedHtml = await vite.transformIndexHtml(req.originalUrl, routeHtml);
+
+        res
+          .status(statusCode)
+          .setHeader('Cache-Control', 'no-cache')
+          .setHeader('Content-Type', 'text/html; charset=utf-8')
+          .send(transformedHtml);
       } catch (err) {
         next(err);
       }
@@ -605,53 +703,7 @@ async function startServer() {
       const cached = staticRouteHtmlCache.get(route);
       if (cached) return cached;
 
-      const meta = siteConfig.seo[route] ?? siteConfig.seo['/'];
-      const canonicalUrl = `${siteConfig.brand.siteUrl}${meta.canonicalPath}`;
-      const escapedTitle = escapeHtmlEntities(meta.title);
-      const escapedDesc = escapeHtmlEntities(meta.description);
-      const jsonLd = safeJsonLdStringify(
-        buildRouteStructuredData(route, { canonicalUrl })
-      );
-
-      const rendered = templateHtml
-        .replace(/<title>[\s\S]*?<\/title>/, `<title>${escapedTitle}</title>`)
-        .replace(
-          /<meta\s+name="description"\s+content="[^"]*"\s*\/>/,
-          `<meta name="description" content="${escapedDesc}" />`
-        )
-        .replace(
-          /<meta\s+name="robots"\s+content="[^"]*"\s*\/>/,
-          `<meta name="robots" content="${meta.robots}" />`
-        )
-        .replace(
-          /<link\s+rel="canonical"\s+href="[^"]*"\s*\/>/,
-          `<link rel="canonical" href="${canonicalUrl}" />`
-        )
-        .replace(
-          /<meta\s+property="og:title"[\s\S]*?\/>/,
-          `<meta property="og:title" content="${escapedTitle}" />`
-        )
-        .replace(
-          /<meta\s+property="og:description"[\s\S]*?\/>/,
-          `<meta property="og:description" content="${escapedDesc}" />`
-        )
-        .replace(
-          /<meta\s+property="og:url"\s+content="[^"]*"\s*\/>/,
-          `<meta property="og:url" content="${canonicalUrl}" />`
-        )
-        .replace(
-          /<meta\s+name="twitter:title"[\s\S]*?\/>/,
-          `<meta name="twitter:title" content="${escapedTitle}" />`
-        )
-        .replace(
-          /<meta\s+name="twitter:description"[\s\S]*?\/>/,
-          `<meta name="twitter:description" content="${escapedDesc}" />`
-        )
-        .replace(
-          /<script id="mdselim-jsonld" type="application\/ld\+json">[\s\S]*?<\/script>/,
-          `<script id="mdselim-jsonld" type="application/ld+json">${jsonLd}</script>`
-        );
-
+      const rendered = renderHtmlTemplateForRoute(templateHtml, route);
       staticRouteHtmlCache.set(route, rendered);
       return rendered;
     };
@@ -659,6 +711,7 @@ async function startServer() {
     app.use(
       express.static(distPath, {
         index: false,
+        redirect: false,
         etag: true,
         maxAge: '1d',
         setHeaders(res, filePath) {
@@ -673,10 +726,23 @@ async function startServer() {
     );
 
     app.get('*', (req: Request, res: Response) => {
-      const route = normalizeRoutePath(req.path);
-      if (route === '/404/' && req.path !== '/404/' && req.path !== '/404.html') {
-        res.status(404);
+      const reqPath = req.path || '/';
+
+      // Never return frontend HTML for missing static assets (JS, CSS, images, fonts, XML, TXT)
+      if (
+        reqPath.startsWith('/assets/') ||
+        (STATIC_ASSET_EXT_REGEX.test(reqPath) &&
+          reqPath !== '/index.html' &&
+          reqPath !== '/404.html')
+      ) {
+        res.status(404).type('text/plain').send('Not Found');
+        return;
       }
+
+      const route = normalizeRoutePath(reqPath);
+      const statusCode = route === '/404/' ? 404 : 200;
+
+      res.status(statusCode);
       res.setHeader('Cache-Control', 'public, max-age=0, must-revalidate');
       res.setHeader('Content-Type', 'text/html; charset=utf-8');
       if (templateHtml) {
